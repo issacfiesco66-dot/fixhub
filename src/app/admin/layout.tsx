@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -99,11 +98,4 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <main className="flex-1 overflow-x-hidden">{children}</main>
     </div>
   );
-}
-
-// Wrapper helper: páginas individuales lo usan para redirigir si no hay admin
-export async function requireAdminOrRedirect() {
-  const admin = await getCurrentAdmin();
-  if (!admin) redirect("/admin/login");
-  return admin;
 }

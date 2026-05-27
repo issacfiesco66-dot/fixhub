@@ -6,6 +6,6 @@ if (!key && process.env.NODE_ENV === "production") {
 }
 
 export const stripe = new Stripe(key ?? "sk_test_dummy", {
-  apiVersion: "2024-10-28.acacia",
+  apiVersion: "2025-02-24.acacia",
   typescript: true,
 });

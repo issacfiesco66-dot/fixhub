@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install --frozen-lockfile=false",
+  "regions": ["iad1"],
+  "functions": {
+    "src/app/api/billing/webhook/route.ts": { "maxDuration": 30 },
+    "src/app/api/leads/[id]/purchase/route.ts": { "maxDuration": 15 },
+    "src/app/api/admin/seo/generate/route.ts": { "maxDuration": 60 }
+  }
+}

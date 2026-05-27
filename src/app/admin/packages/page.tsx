@@ -1,8 +1,8 @@
-import { Package, Sparkles } from "lucide-react";
+﻿import { Package, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatMXN } from "@/lib/utils";
 import { BentoCard, BentoIcon } from "@/components/ui/BentoCard";
-import { requireAdminOrRedirect } from "../layout";
+import { requireAdminOrRedirect } from "../_lib/auth-guard";
 
 export const dynamic = "force-dynamic";
 

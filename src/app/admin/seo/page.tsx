@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import { requireAdminOrRedirect } from "../layout";
+﻿import { prisma } from "@/lib/prisma";
+import { requireAdminOrRedirect } from "../_lib/auth-guard";
 import { SeoClient } from "./_components/SeoClient";
 
 export const dynamic = "force-dynamic";
