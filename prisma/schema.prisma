@@ -1,0 +1,392 @@
+// FixHub — Marketplace de Servicios Locales
+// Schema diseñado para escalar a cualquier categoría: reparación, plomería,
+// electricidad, jardinería, instalación, etc. La verticalización por marca
+// es opcional (solo aplica donde tiene sentido — ej. electrodomésticos).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// CATÁLOGO DE SERVICIOS (extensible)
+// ─────────────────────────────────────────────────────────────────────
+
+model Category {
+  id          String    @id @default(cuid())
+  slug        String    @unique // "linea-blanca", "plomeria", "electricidad"
+  name        String                  // "Línea Blanca"
+  description String?
+  icon        String?                 // nombre de ícono lucide
+  order       Int       @default(0)
+  active      Boolean   @default(true)
+  services    Service[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([active, order])
+}
+
+model Service {
+  id              String          @id @default(cuid())
+  slug            String          @unique // "reparacion-lavadoras"
+  name            String                  // "Reparación de Lavadoras"
+  description     String?
+  categoryId      String
+  category        Category        @relation(fields: [categoryId], references: [id])
+  // Si requiresBrand=true, el formulario pide marca (ej. electrodomésticos).
+  // Para plomería/jardinería se queda en false.
+  requiresBrand   Boolean         @default(false)
+  basePrice       Int             @default(450) // precio del lead en centavos? — aquí en MXN entero
+  active          Boolean         @default(true)
+  leads           Lead[]
+  technicians     TechnicianService[]
+  brands          ServiceBrand[]
+  contents        ServiceContent[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([categoryId, active])
+}
+
+model Brand {
+  id        String         @id @default(cuid())
+  slug      String         @unique // "mabe", "lg", "samsung"
+  name      String
+  logo      String?
+  active    Boolean        @default(true)
+  services  ServiceBrand[]
+  leads     Lead[]
+  contents  ServiceContent[]
+  createdAt DateTime       @default(now())
+
+  @@index([active])
+}
+
+// Tabla pivote: qué marcas aplican a qué servicios
+model ServiceBrand {
+  serviceId String
+  brandId   String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  brand     Brand   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+
+  @@id([serviceId, brandId])
+  @@index([brandId])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// GEOGRAFÍA
+// ─────────────────────────────────────────────────────────────────────
+
+model State {
+  id     String @id @default(cuid())
+  slug   String @unique // "cdmx", "jalisco"
+  name   String
+  cities City[]
+}
+
+model City {
+  id        String     @id @default(cuid())
+  slug      String     @unique // "guadalajara", "cdmx"
+  name      String
+  stateId   String
+  state     State      @relation(fields: [stateId], references: [id])
+  zones     Zone[]
+  leads     Lead[]
+  coverages TechnicianCoverage[]
+  contents  ServiceContent[]
+  active    Boolean    @default(true)
+  // Geo-SEO: coordenadas e info para LocalBusiness JSON-LD
+  latitude  Float?
+  longitude Float?
+  phone     String?    // teléfono local de FixHub para LocalBusiness schema
+
+  @@index([stateId, active])
+}
+
+model Zone {
+  id     String  @id @default(cuid())
+  slug   String  // "polanco", "satelite" — unique dentro de la ciudad
+  name   String
+  cityId String
+  city   City    @relation(fields: [cityId], references: [id])
+  leads  Lead[]
+
+  @@unique([cityId, slug])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// USUARIOS — Auth.js compatible
+// ─────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  CLIENT
+  TECHNICIAN
+  ADMIN
+}
+
+model User {
+  id            String      @id @default(cuid())
+  email         String      @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  name          String?
+  phone         String?
+  image         String?
+  role          UserRole    @default(CLIENT)
+  technician    Technician?
+  leads         Lead[]      @relation("ClientLeads")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([role])
+}
+
+model Technician {
+  id            String              @id @default(cuid())
+  userId        String              @unique
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName   String
+  bio           String?
+  yearsExp      Int                 @default(0)
+  rating        Float               @default(0)
+  totalJobs     Int                 @default(0)
+  // Saldo en MXN (entero — sin centavos para MVP). Para fintech real usar Decimal.
+  balance       Int                 @default(0)
+  active        Boolean             @default(true)
+  verified      Boolean             @default(false)
+  // Filtros para realtime: en qué ciudades opera y qué servicios atiende
+  coverages     TechnicianCoverage[]
+  services      TechnicianService[]
+  purchases     LeadPurchase[]
+  transactions  BalanceTransaction[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([active, verified])
+}
+
+model TechnicianCoverage {
+  technicianId String
+  cityId       String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  city         City       @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  @@id([technicianId, cityId])
+  @@index([cityId])
+}
+
+model TechnicianService {
+  technicianId String
+  serviceId    String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  service      Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([technicianId, serviceId])
+  @@index([serviceId])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// LEADS (corazón del marketplace)
+// ─────────────────────────────────────────────────────────────────────
+
+enum LeadStatus {
+  PENDING    // recién creado, visible para los técnicos
+  PURCHASED  // ya fue comprado por un técnico — exclusivo
+  EXPIRED    // pasaron 24h sin compra
+  CANCELLED  // cliente canceló
+}
+
+model Lead {
+  id           String         @id @default(cuid())
+  // Datos del cliente (teléfono OCULTO hasta que un técnico compre)
+  clientId     String?
+  client       User?          @relation("ClientLeads", fields: [clientId], references: [id])
+  clientName   String
+  clientPhone  String                 // solo visible para el técnico que compra
+  clientEmail  String?
+  // Catalogación
+  serviceId    String
+  service      Service        @relation(fields: [serviceId], references: [id])
+  brandId      String?
+  brand        Brand?         @relation(fields: [brandId], references: [id])
+  cityId       String
+  city         City           @relation(fields: [cityId], references: [id])
+  zoneId       String?
+  zone         Zone?          @relation(fields: [zoneId], references: [id])
+  addressHint  String?                // "Cerca de plaza X" — sin dirección exacta
+  // Descripción del trabajo
+  failure      String         @db.Text
+  urgency      LeadUrgency    @default(NORMAL)
+  preferredAt  DateTime?
+  // Pricing
+  price        Int                    // congelado al crear (puede subir con tiempo)
+  status       LeadStatus     @default(PENDING)
+  // Conversión
+  purchase     LeadPurchase?
+  // Tracking — cuántos técnicos vieron la alerta (para el efecto FOMO)
+  viewCount    Int            @default(0)
+  source       String?                // utm_source, página de origen
+  expiresAt    DateTime
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([status, cityId, serviceId])
+  @@index([createdAt])
+  @@index([expiresAt])
+}
+
+enum LeadUrgency {
+  NORMAL
+  URGENT     // necesita hoy/mañana
+  EMERGENCY  // fuga/sin luz — visible diferente
+}
+
+// LeadPurchase es 1:1 con Lead — un lead solo puede ser comprado UNA vez.
+// La exclusividad se hace con @unique en leadId.
+model LeadPurchase {
+  id            String     @id @default(cuid())
+  leadId        String     @unique
+  lead          Lead       @relation(fields: [leadId], references: [id])
+  technicianId  String
+  technician    Technician @relation(fields: [technicianId], references: [id])
+  pricePaid     Int                  // congelado al momento de la compra
+  // Auditoría — qué pasó después
+  contactedAt   DateTime?
+  jobCompleted  Boolean    @default(false)
+  jobAmount     Int?                 // lo que cobró el técnico al cliente
+  createdAt     DateTime   @default(now())
+
+  @@index([technicianId, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// SALDO Y PAGOS (Stripe)
+// ─────────────────────────────────────────────────────────────────────
+
+enum TransactionType {
+  RECHARGE       // recarga vía Stripe
+  LEAD_PURCHASE  // débito por compra de lead
+  REFUND         // devolución (admin manual)
+  ADJUSTMENT     // ajuste manual del admin
+  BONUS          // bono de bienvenida, referido, etc.
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model BalanceTransaction {
+  id              String            @id @default(cuid())
+  technicianId    String
+  technician      Technician        @relation(fields: [technicianId], references: [id])
+  type            TransactionType
+  status          TransactionStatus @default(PENDING)
+  // amount POSITIVO=crédito, NEGATIVO=débito. balanceAfter es el saldo resultante.
+  amount          Int
+  balanceAfter    Int
+  description     String?
+  // Referencias cruzadas
+  leadPurchaseId  String?           // si type=LEAD_PURCHASE
+  stripeSessionId String?           @unique
+  stripePaymentId String?           @unique
+  metadata        Json?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([technicianId, createdAt])
+  @@index([status])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// SERVICE CONTENT — textos únicos IA-generados por (service × brand × city)
+// Alimenta el motor de SEO programático evitando thin content / duplicidad.
+// La tupla (serviceId, brandId, cityId) es única — brandId opcional para
+// servicios que no requieren marca (plomería, electricidad).
+// ─────────────────────────────────────────────────────────────────────
+
+model ServiceContent {
+  id         String   @id @default(cuid())
+  serviceId  String
+  brandId    String?  // null cuando el servicio no requiere marca
+  cityId     String
+  service    Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  brand      Brand?   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  city       City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  // SEO crítico
+  h1         String                   // "Reparación de Lavadoras LG en Querétaro a Domicilio"
+  metaTitle  String?                  // override de <title> si quieres
+  metaDescription String?  @db.Text   // override de meta description
+  body       String   @db.Text        // Texto base indexable (150-300 palabras)
+  // Origen del contenido — útil para auditar calidad
+  source     ContentSource @default(MANUAL)
+  reviewed   Boolean  @default(false) // marca tras revisión humana
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([serviceId, brandId, cityId])
+  @@index([cityId])
+  @@index([reviewed])
+}
+
+enum ContentSource {
+  MANUAL      // escrito por humano
+  AI_GPT      // generado por modelo OpenAI
+  AI_CLAUDE   // generado por modelo Anthropic
+  TEMPLATE    // construido por template (fallback)
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// PROSPECTS — base de outbound (ej. scrape de Google Maps)
+// El admin importa prospects y los trabaja en pipeline NEW → CONTACTED → CONVERTED.
+// Cuando un prospect convierte, idealmente se asocia a un Lead real.
+// ─────────────────────────────────────────────────────────────────────
+
+enum ProspectStatus {
+  NEW
+  CONTACTED
+  CONVERTED
+  DISCARDED
+}
+
+model Prospect {
+  id        String         @id @default(uuid())
+  name      String
+  phone     String
+  email     String?
+  city      String                          // string libre — el scraper no siempre conoce nuestras ciudades catalogadas
+  source    String                          // "GoogleMaps_Scraper", "Facebook_Ad", "Referido", etc.
+  notes     String?        @db.Text
+  status    ProspectStatus @default(NEW)
+  // Si convirtió a un Lead real, lo enlazamos (opcional)
+  convertedLeadId String?  @unique
+  contactedAt DateTime?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([status, createdAt])
+  @@index([source])
+  @@index([phone])
+}
+
+// Paquetes de recarga configurables (en lugar de hardcodear $1k/$2k/$5k)
+model RechargePackage {
+  id          String   @id @default(cuid())
+  name        String              // "Paquete Básico"
+  amount      Int                 // 1000 MXN
+  bonus       Int      @default(0) // bonus extra: paga 5000, recibe 5500
+  popular     Boolean  @default(false)
+  active      Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([active, order])
+}
