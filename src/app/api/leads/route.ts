@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { broker, type LeadAlertPayload } from "@/lib/realtime";
 import { createLeadSchema } from "@/lib/validators";
+import { getCurrentTechnician } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,29 +63,11 @@ export async function POST(req: NextRequest) {
       source: data.source,
       expiresAt: new Date(Date.now() + LEAD_TTL_HOURS * 60 * 60 * 1000),
     },
-    include: { service: true, brand: true, city: true, zone: true },
   });
 
-  // Broadcast en tiempo real (no bloquea la respuesta — fire & forget seguro)
-  const channel = broker.channelOf(city.id, service.id);
-  const viewers = broker.viewerCount(channel);
-  const payload: LeadAlertPayload = {
-    type: "NEW_LEAD",
-    leadId: lead.id,
-    service: service.name,
-    serviceSlug: service.slug,
-    brand: brand?.name ?? null,
-    city: city.name,
-    zone: zone?.name ?? null,
-    failure: lead.failure,
-    urgency: lead.urgency,
-    price: lead.price,
-    // FOMO: como mínimo 2, como máximo viewers reales + 1 — "X técnicos más viendo"
-    viewersHint: Math.max(2, viewers + 1),
-    expiresAt: lead.expiresAt.toISOString(),
-    createdAt: lead.createdAt.toISOString(),
-  };
-  broker.publish(channel, payload);
+  // En Vercel serverless no hay broker in-memory que sobreviva entre requests.
+  // El dashboard del técnico hace polling cada 5s contra /api/leads/feed,
+  // así que el lead recién creado lo verán en ≤5s automáticamente.
 
   return NextResponse.json(
     {
@@ -97,19 +79,24 @@ export async function POST(req: NextRequest) {
   );
 }
 
-// GET /api/leads?status=PENDING&cityId=...&serviceId=...
-// Lista para el dashboard del técnico (lo que ya hay en su zona).
-export async function GET(req: NextRequest) {
-  const sp = req.nextUrl.searchParams;
-  const cityIds = sp.getAll("cityId");
-  const serviceIds = sp.getAll("serviceId");
+// GET /api/leads — requiere auth de técnico, devuelve solo leads en su cobertura.
+// Cierra M-1 del audit (antes: cualquier anónimo veía el inventario completo).
+export async function GET() {
+  const tech = await getCurrentTechnician();
+  if (!tech) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const cityIds = tech.coverages.map((c) => c.cityId);
+  const serviceIds = tech.services.map((s) => s.serviceId);
+  if (cityIds.length === 0 || serviceIds.length === 0) {
+    return NextResponse.json({ leads: [] });
+  }
 
   const leads = await prisma.lead.findMany({
     where: {
       status: "PENDING",
       expiresAt: { gt: new Date() },
-      ...(cityIds.length ? { cityId: { in: cityIds } } : {}),
-      ...(serviceIds.length ? { serviceId: { in: serviceIds } } : {}),
+      cityId: { in: cityIds },
+      serviceId: { in: serviceIds },
     },
     select: {
       id: true,

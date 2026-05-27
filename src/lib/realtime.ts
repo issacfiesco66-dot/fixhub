@@ -1,8 +1,13 @@
-// Broker de realtime en memoria — pub/sub por canal (cityId:serviceId).
-// Diseñado para SSE en una sola instancia. Para producción multi-instancia,
-// reemplaza el cuerpo de publish() por una llamada a Pusher/Ably/Supabase Realtime,
-// y reemplaza subscribe() por el cliente correspondiente. La API pública
-// (subscribe/publish/channelOf) NO cambia, así que el resto del código queda igual.
+// Realtime layer — actualmente vía polling (Vercel-compatible).
+//
+// El dashboard del técnico llama GET /api/leads/feed?since= cada 5s.
+// La API valida coverage server-side y devuelve solo los leads nuevos
+// en su zona/servicios.
+//
+// Si en el futuro mueves a un host con conexiones persistentes (Railway,
+// Fly.io, etc.) o agregas Pusher/Ably/Upstash Redis pub/sub, esta capa
+// existe como punto de extensión. Por ahora el feed va por polling y
+// las páginas que importaban `broker` ya no lo necesitan.
 
 export type LeadAlertPayload = {
   type: "NEW_LEAD";
@@ -15,54 +20,14 @@ export type LeadAlertPayload = {
   failure: string;
   urgency: "NORMAL" | "URGENT" | "EMERGENCY";
   price: number;
-  viewersHint: number; // mentira piadosa para el FOMO
+  viewersHint: number;
   expiresAt: string;
   createdAt: string;
 };
 
-type Subscriber = (msg: LeadAlertPayload) => void;
-
-class Broker {
-  private channels = new Map<string, Set<Subscriber>>();
-
-  channelOf(cityId: string, serviceId: string) {
-    return `${cityId}:${serviceId}`;
-  }
-
-  // Suscribe a múltiples canales a la vez (un técnico cubre N ciudades × M servicios)
-  subscribe(channels: string[], sub: Subscriber): () => void {
-    for (const ch of channels) {
-      if (!this.channels.has(ch)) this.channels.set(ch, new Set());
-      this.channels.get(ch)!.add(sub);
-    }
-    return () => {
-      for (const ch of channels) {
-        this.channels.get(ch)?.delete(sub);
-      }
-    };
-  }
-
-  publish(channel: string, msg: LeadAlertPayload) {
-    const subs = this.channels.get(channel);
-    if (!subs) return 0;
-    for (const sub of subs) {
-      try {
-        sub(msg);
-      } catch (e) {
-        // un consumidor caído no debe tumbar al resto
-        console.error("[realtime] subscriber error", e);
-      }
-    }
-    return subs.size;
-  }
-
-  // Estimado de "técnicos viendo" para el FOMO (suma de subs en canales)
-  viewerCount(channel: string) {
-    return this.channels.get(channel)?.size ?? 0;
-  }
+// "FOMO" sintético — número de técnicos viendo este lead.
+// Antes lo sacábamos del broker. Ahora es un número conservador
+// hasta que conectemos un contador real (Redis INCR o similar).
+export function syntheticViewersHint(): number {
+  return 2 + Math.floor(Math.random() * 3); // entre 2 y 4
 }
-
-// Singleton entre hot-reloads de Next dev
-const globalForBroker = globalThis as unknown as { __fixhub_broker?: Broker };
-export const broker = globalForBroker.__fixhub_broker ?? new Broker();
-if (process.env.NODE_ENV !== "production") globalForBroker.__fixhub_broker = broker;

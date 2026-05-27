@@ -122,32 +122,69 @@ export function TechnicianDashboard({
     }
   };
 
+  // Polling cada 5s contra /api/leads/feed (Vercel-compatible).
+  // El servidor filtra server-side por coverage + verified.
   useEffect(() => {
-    const es = new EventSource("/api/realtime");
-    es.addEventListener("ready", () => setConnected(true));
-    es.addEventListener("lead", (e) => {
-      const data = JSON.parse((e as MessageEvent).data) as AlertPayload;
-      playPing();
-      setActiveAlert(data);
-      setLeads((prev) => [
-        {
-          id: data.leadId,
-          failure: data.failure,
-          urgency: data.urgency,
-          price: data.price,
-          createdAt: data.createdAt,
-          expiresAt: data.expiresAt,
-          addressHint: null,
-          service: { name: data.service },
-          brand: data.brand ? { name: data.brand } : null,
-          city: { name: data.city },
-          zone: data.zone ? { name: data.zone } : null,
-        },
-        ...prev.filter((l) => l.id !== data.leadId),
-      ]);
-    });
-    es.onerror = () => setConnected(false);
-    return () => es.close();
+    let cancelled = false;
+    let lastSeen = new Date().toISOString();
+    const knownIds = new Set(initialLeads.map((l) => l.id));
+
+    async function poll() {
+      try {
+        const res = await fetch(`/api/leads/feed?since=${encodeURIComponent(lastSeen)}`);
+        if (!res.ok) {
+          setConnected(false);
+          return;
+        }
+        const data = await res.json();
+        setConnected(true);
+        lastSeen = data.serverTime ?? lastSeen;
+
+        if (!cancelled && Array.isArray(data.leads) && data.leads.length > 0) {
+          // Filtrar solo los que no conocemos para no triggear alerta de cosas viejas
+          const fresh = data.leads.filter((l: Lead) => !knownIds.has(l.id));
+          if (fresh.length === 0) return;
+
+          for (const l of fresh) knownIds.add(l.id);
+
+          // Mostrar alerta para el más reciente
+          const newest = fresh[0];
+          playPing();
+          setActiveAlert({
+            type: "NEW_LEAD",
+            leadId: newest.id,
+            service: newest.service.name,
+            serviceSlug: "",
+            brand: newest.brand?.name ?? null,
+            city: newest.city.name,
+            zone: newest.zone?.name ?? null,
+            failure: newest.failure,
+            urgency: newest.urgency,
+            price: newest.price,
+            viewersHint: 2 + Math.floor(Math.random() * 3),
+            expiresAt: newest.expiresAt,
+            createdAt: newest.createdAt,
+          });
+
+          // Prepend al panel
+          setLeads((prev) => {
+            const existing = new Set(prev.map((p) => p.id));
+            const additions = fresh.filter((l: Lead) => !existing.has(l.id));
+            return [...additions, ...prev];
+          });
+        }
+      } catch {
+        setConnected(false);
+      }
+    }
+
+    poll();
+    const interval = setInterval(poll, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
