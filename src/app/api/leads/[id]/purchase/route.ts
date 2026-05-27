@@ -33,9 +33,34 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
         throw new BizError("LEAD_EXPIRED", "Este lead expiró");
       }
 
-      // 2. Releer el balance del técnico (no confiar en el cache de UI)
+      // 2. Releer el técnico — releemos balance + verified dentro de la tx
       const techRow = await tx.technician.findUnique({ where: { id: tech.id } });
       if (!techRow) throw new BizError("TECH_NOT_FOUND", "Técnico no encontrado");
+
+      // 3. C-4 + M-3: gate de verificación + coverage check
+      // Sin esto, cualquier tech podía comprar leads en CIUDADES que NO cubre
+      // y SERVICIOS que NO ofrece — incluso sin verificar su perfil.
+      if (!techRow.verified) {
+        throw new BizError("NOT_VERIFIED", "Tu cuenta está pendiente de verificación");
+      }
+      const coverage = await tx.technicianCoverage.findUnique({
+        where: {
+          technicianId_cityId: { technicianId: tech.id, cityId: lead.cityId },
+        },
+      });
+      if (!coverage) {
+        throw new BizError("OUT_OF_COVERAGE", "Este lead está fuera de tu cobertura");
+      }
+      const offersService = await tx.technicianService.findUnique({
+        where: {
+          technicianId_serviceId: { technicianId: tech.id, serviceId: lead.serviceId },
+        },
+      });
+      if (!offersService) {
+        throw new BizError("WRONG_SERVICE", "No ofreces este tipo de servicio");
+      }
+
+      // 4. Verificar saldo
       if (techRow.balance < lead.price) {
         throw new BizError("INSUFFICIENT_FUNDS", "Saldo insuficiente", {
           balance: techRow.balance,
@@ -99,7 +124,11 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ ok: true, ...result });
   } catch (err) {
     if (err instanceof BizError) {
-      const status = err.code === "INSUFFICIENT_FUNDS" ? 402 : err.code === "LEAD_TAKEN" ? 409 : 400;
+      const status =
+        err.code === "INSUFFICIENT_FUNDS" ? 402 :
+        err.code === "LEAD_TAKEN" ? 409 :
+        err.code === "OUT_OF_COVERAGE" || err.code === "WRONG_SERVICE" || err.code === "NOT_VERIFIED" ? 403 :
+        400;
       return NextResponse.json({ error: err.message, code: err.code, ...err.meta }, { status });
     }
     // Race condition: dos clicks simultáneos — el segundo cae aquí
