@@ -9,9 +9,20 @@
 
 import OpenAI from "openai";
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy-init: el cliente se crea la primera vez que se llama generateServiceContent.
+// CRÍTICO: instanciarlo al top-level rompe `next build` cuando OPENAI_API_KEY
+// no está disponible durante la fase "Collecting page data" (lo que hace Vercel).
+let cachedClient: OpenAI | null = null;
+function getClient(): OpenAI {
+  if (!cachedClient) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error("OPENAI_API_KEY no configurado. Añádelo en las env vars del hosting.");
+    }
+    cachedClient = new OpenAI({ apiKey });
+  }
+  return cachedClient;
+}
 
 const MODEL = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
 
@@ -34,10 +45,6 @@ export type GenerationInput = {
 export async function generateServiceContent(
   input: GenerationInput
 ): Promise<GeneratedContent> {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY no configurado. Añádelo a .env");
-  }
-
   const zonesStr = input.zones.slice(0, 6).join(", ") || "toda la ciudad";
   const brandLine = input.brandName
     ? `Marca: ${input.brandName}`
@@ -57,7 +64,7 @@ Devuelve JSON estricto con esta estructura:
   "body": "Texto indexable de 130-160 palabras, único, sin saludos ni despedidas. Debe mencionar: (1) fallas comunes específicas${input.brandName ? ` de ${input.brandName}` : ""} (ej. códigos de error, ruidos en transmisión, problemas eléctricos); (2) la importancia de reparar a domicilio en ${input.cityName} usando refacciones originales y mencionar al menos 2 zonas de ${zonesStr}; (3) CTA urgente al final. Tono profesional, cercano, sin tecnicismos innecesarios. NO repitas frases textuales con otras ciudades."
 }`;
 
-  const completion = await client.chat.completions.create({
+  const completion = await getClient().chat.completions.create({
     model: MODEL,
     response_format: { type: "json_object" },
     temperature: 0.75,
