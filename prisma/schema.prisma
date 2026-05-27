@@ -377,6 +377,17 @@ model Prospect {
   @@index([phone])
 }
 
+// Tabla anti-replay para webhooks de Stripe.
+// Stripe puede reentregar el mismo eventId (retries, network); el unique
+// constraint nos garantiza que cada evento se procesa una sola vez.
+model ProcessedWebhookEvent {
+  eventId   String   @id
+  type      String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 // Paquetes de recarga configurables (en lugar de hardcodear $1k/$2k/$5k)
 model RechargePackage {
   id          String   @id @default(cuid())
