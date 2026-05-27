@@ -84,3 +84,4 @@ $RECYCLE.BIN/
 *.pid
 *.seed
 *.pid.lock
+security/

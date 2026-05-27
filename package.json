@@ -13,6 +13,7 @@
     "db:studio": "prisma studio",
     "seo:generate": "tsx scripts/generate-seo-content.ts",
     "seo:generate:force": "tsx scripts/generate-seo-content.ts --force",
+    "create-admin": "tsx scripts/create-admin.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

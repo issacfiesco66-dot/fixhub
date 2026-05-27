@@ -7,8 +7,8 @@ import { ShieldCheck, Mail, Lock, LogIn } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@fixhub.mx");
-  const [password, setPassword] = useState("demo1234");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,10 +56,7 @@ export default function AdminLoginPage() {
 
         <h1 className="mb-1 text-2xl font-bold tracking-tight">Acceso restringido</h1>
         <p className="mb-6 text-sm text-zinc-400">
-          Demo:{" "}
-          <code className="rounded bg-zinc-800 px-1.5 py-0.5 text-zinc-300">admin@fixhub.mx</code>{" "}
-          /{" "}
-          <code className="rounded bg-zinc-800 px-1.5 py-0.5 text-zinc-300">demo1234</code>
+          Ingresa con tus credenciales de administrador.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -219,61 +219,69 @@ async function main() {
     ],
   });
 
-  // ── Técnico demo ──────────────────────────────────────────────
-  const hash = await bcrypt.hash("demo1234", 10);
-  const techUser = await prisma.user.upsert({
-    where: { email: "tecnico@fixhub.mx" },
-    update: {},
-    create: {
-      email: "tecnico@fixhub.mx",
-      passwordHash: hash,
-      name: "Juan Pérez",
-      phone: "+523312345678",
-      role: UserRole.TECHNICIAN,
-    },
-  });
+  // ── Cuentas demo (técnico + admin) ────────────────────────────
+  // GATED: solo crear si FIXHUB_SEED_DEMO === "true" y NO estamos en prod.
+  // En prod usa `pnpm tsx scripts/create-admin.ts` con password manual.
+  const seedDemoEnabled =
+    process.env.FIXHUB_SEED_DEMO === "true" && process.env.NODE_ENV !== "production";
 
-  const tech = await prisma.technician.upsert({
-    where: { userId: techUser.id },
-    update: {},
-    create: {
-      userId: techUser.id,
-      displayName: "Juan Pérez — Especialista Línea Blanca",
-      bio: "10 años de experiencia reparando lavadoras y refrigeradores.",
-      yearsExp: 10,
-      balance: 1500,
-      active: true,
-      verified: true,
-    },
-  });
-
-  // Cobertura: GDL + Zapopan, servicios de línea blanca
-  for (const cityId of [gdl.id, zapopan.id]) {
-    await prisma.technicianCoverage.upsert({
-      where: { technicianId_cityId: { technicianId: tech.id, cityId } },
+  if (seedDemoEnabled) {
+    const hash = await bcrypt.hash("demo1234", 10);
+    const techUser = await prisma.user.upsert({
+      where: { email: "tecnico@fixhub.mx" },
       update: {},
-      create: { technicianId: tech.id, cityId },
+      create: {
+        email: "tecnico@fixhub.mx",
+        passwordHash: hash,
+        name: "Juan Pérez",
+        phone: "+523312345678",
+        role: UserRole.TECHNICIAN,
+      },
     });
-  }
-  for (const serviceId of [lavadoras.id, refrigeradores.id, secadoras.id]) {
-    await prisma.technicianService.upsert({
-      where: { technicianId_serviceId: { technicianId: tech.id, serviceId } },
-      update: {},
-      create: { technicianId: tech.id, serviceId },
-    });
-  }
 
-  // Admin demo
-  await prisma.user.upsert({
-    where: { email: "admin@fixhub.mx" },
-    update: {},
-    create: {
-      email: "admin@fixhub.mx",
-      passwordHash: hash,
-      name: "Admin",
-      role: UserRole.ADMIN,
-    },
-  });
+    const tech = await prisma.technician.upsert({
+      where: { userId: techUser.id },
+      update: {},
+      create: {
+        userId: techUser.id,
+        displayName: "Juan Pérez — Especialista Línea Blanca",
+        bio: "10 años de experiencia reparando lavadoras y refrigeradores.",
+        yearsExp: 10,
+        balance: 1500,
+        active: true,
+        verified: true,
+      },
+    });
+
+    for (const cityId of [gdl.id, zapopan.id]) {
+      await prisma.technicianCoverage.upsert({
+        where: { technicianId_cityId: { technicianId: tech.id, cityId } },
+        update: {},
+        create: { technicianId: tech.id, cityId },
+      });
+    }
+    for (const serviceId of [lavadoras.id, refrigeradores.id, secadoras.id]) {
+      await prisma.technicianService.upsert({
+        where: { technicianId_serviceId: { technicianId: tech.id, serviceId } },
+        update: {},
+        create: { technicianId: tech.id, serviceId },
+      });
+    }
+
+    await prisma.user.upsert({
+      where: { email: "admin@fixhub.mx" },
+      update: {},
+      create: {
+        email: "admin@fixhub.mx",
+        passwordHash: hash,
+        name: "Admin",
+        role: UserRole.ADMIN,
+      },
+    });
+  } else {
+    console.log("⚠️  Demo accounts NOT created. Set FIXHUB_SEED_DEMO=true to enable in dev.");
+    console.log("   Para crear admin en prod: pnpm tsx scripts/create-admin.ts");
+  }
 
   // ── ServiceContent (Plan Geo-SEO PDF) ─────────────────────────
   // Los 3 textos pre-optimizados del PDF. Estos sirven como ejemplos
@@ -386,8 +394,10 @@ async function main() {
   });
 
   console.log("✅ Seed completado.");
-  console.log("   Técnico: tecnico@fixhub.mx / demo1234 (saldo $1500 MXN)");
-  console.log("   Admin:   admin@fixhub.mx   / demo1234");
+  if (seedDemoEnabled) {
+    console.log("   Técnico: tecnico@fixhub.mx / demo1234 (saldo $1500 MXN)");
+    console.log("   Admin:   admin@fixhub.mx   / demo1234");
+  }
   console.log("   Prospects de muestra: 4");
   console.log(`   Ciudades con coords: ${citySpecs.length} (incl. Querétaro, Puebla, Cuernavaca)`);
   console.log(`   Zonas geo-SEO: ${zonas.length}`);

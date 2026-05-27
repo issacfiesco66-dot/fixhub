@@ -7,8 +7,8 @@ import { Wrench, Mail, Lock, LogIn } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("tecnico@fixhub.mx");
-  const [password, setPassword] = useState("demo1234");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,8 +56,7 @@ export default function LoginPage() {
 
         <h1 className="mb-1 text-2xl font-bold tracking-tight">Bienvenido</h1>
         <p className="mb-6 text-sm text-zinc-400">
-          Demo: <code className="rounded bg-zinc-800 px-1.5 py-0.5 text-zinc-300">tecnico@fixhub.mx</code> /{" "}
-          <code className="rounded bg-zinc-800 px-1.5 py-0.5 text-zinc-300">demo1234</code>
+          Accede a tu panel de técnico.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
