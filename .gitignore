@@ -85,3 +85,6 @@ $RECYCLE.BIN/
 *.seed
 *.pid.lock
 security/
+
+.vercel
+.env*.local
