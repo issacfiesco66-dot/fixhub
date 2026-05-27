@@ -8,8 +8,10 @@ import {
   Clock,
   ArrowRight,
   MapPin,
+  Sparkles,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { HeroCTA } from "@/components/HeroCTA";
 
 export const revalidate = 3600;
 
@@ -30,72 +32,82 @@ export default async function HomePage() {
   ]);
 
   return (
-    <main className="min-h-screen bg-slate-50/60">
-      {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
-          <Link href="/" className="flex items-center gap-2 font-semibold text-zinc-900">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-glow-indigo">
+    <main className="relative min-h-screen bg-slate-50/40">
+      {/* Patrón de puntos de fondo — textura sutil estilo SaaS premium */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px]"
+      />
+      {/* Glow ambiental indigo en el top */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.18),transparent_55%)]"
+      />
+
+      {/* Header — glass + padding generoso */}
+      <header className="sticky top-0 z-20 border-b border-slate-200/60 bg-white/70 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-8 py-4">
+          <Link href="/" className="flex items-center gap-2.5 font-semibold text-zinc-900">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-lg shadow-indigo-500/30">
               <Wrench className="h-4 w-4" />
             </div>
-            FixHub
+            <span className="tracking-tight">FixHub</span>
           </Link>
           <div className="flex items-center gap-2">
             <Link
               href="/panel"
-              className="rounded-xl border border-slate-200 px-3.5 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+              className="rounded-full border border-slate-200 px-4 py-1.5 text-sm font-medium text-zinc-700 transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
             >
               Soy Técnico
             </Link>
             <Link
               href="#servicios"
-              className="rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-md shadow-brand-500/20 hover:shadow-glow-indigo"
+              className="group relative overflow-hidden rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 px-5 py-1.5 text-sm font-semibold text-white shadow-md shadow-indigo-500/30 ring-1 ring-white/10 transition-all hover:shadow-lg hover:shadow-indigo-500/50"
             >
-              Solicitar
+              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+              <span className="relative">Solicitar</span>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.15),transparent_55%)]" />
-        <div className="relative mx-auto max-w-4xl px-6 py-20 text-center">
-          <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-money-300/60 bg-money-50 px-3 py-1 text-xs font-medium text-money-700">
-            <ShieldCheck className="h-3 w-3" />
-            Técnicos verificados
-          </div>
-          <h1 className="mb-5 text-5xl font-bold leading-[1.05] tracking-tight text-zinc-900 md:text-6xl">
-            Reparaciones a domicilio,{" "}
-            <span className="bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent">
-              en minutos
-            </span>
-          </h1>
-          <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-zinc-600">
-            Electrodomésticos, plomería, electricidad y más. El mismo día, en tu zona,
-            con garantía.
-          </p>
-          <Link
-            href="#servicios"
-            className="group inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-brand-500/30 transition-all hover:shadow-glow-indigo"
-          >
-            Solicitar técnico ahora
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
+      {/* Hero — contenedor con glassmorphism encima del patrón de puntos */}
+      <section className="relative">
+        <div className="mx-auto max-w-6xl px-6 pt-20 pb-24">
+          <div className="rounded-[2rem] border border-white/40 bg-white/70 px-6 py-16 text-center shadow-[0_8px_60px_-15px_rgba(99,102,241,0.18)] backdrop-blur-md sm:px-12 md:py-20">
+            <div className="mx-auto mb-5 inline-flex items-center gap-1.5 rounded-full border border-emerald-300/60 bg-emerald-50/80 px-3.5 py-1 text-xs font-medium text-emerald-700 backdrop-blur">
+              <Sparkles className="h-3 w-3" />
+              Técnicos verificados · Servicio el mismo día
+            </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-500">
-            <span className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4 text-money-600" />
-              Respuesta en &lt;5 min
-            </span>
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-money-600" />
-              Garantía 30 días
-            </span>
-            <span className="flex items-center gap-1.5">
-              <MapPin className="h-4 w-4 text-money-600" />
-              {cities.length}+ ciudades
-            </span>
+            <h1 className="mb-5 text-5xl font-bold leading-[1.02] tracking-tight text-zinc-900 md:text-6xl">
+              Reparaciones a domicilio,{" "}
+              <span className="bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
+                en minutos
+              </span>
+            </h1>
+
+            <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-zinc-600">
+              Electrodomésticos, plomería, electricidad y más. El mismo día, en tu zona,
+              con garantía.
+            </p>
+
+            <HeroCTA />
+
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-zinc-500">
+              <span className="flex items-center gap-1.5">
+                <Clock className="h-4 w-4 text-emerald-600" />
+                Respuesta en &lt;5 min
+              </span>
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                Garantía 30 días
+              </span>
+              <span className="flex items-center gap-1.5">
+                <MapPin className="h-4 w-4 text-emerald-600" />
+                {cities.length}+ ciudades
+              </span>
+            </div>
           </div>
         </div>
       </section>
