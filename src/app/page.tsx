@@ -15,7 +15,11 @@ import {
 import { prisma } from "@/lib/prisma";
 import { HeroCTA } from "@/components/HeroCTA";
 
-export const revalidate = 3600;
+// Render on-demand. Antes era revalidate=3600 (ISR), pero eso intenta
+// pre-renderizar en build y necesita DATABASE_URL desde el primer deploy.
+// Con force-dynamic la home se renderiza por request y se cachea vía
+// los headers del CDN. Cuando estabilices prod podés revertir a ISR.
+export const dynamic = "force-dynamic";
 
 // Icono Lucide por categoría (nueva taxonomía)
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {

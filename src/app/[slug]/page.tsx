@@ -89,34 +89,45 @@ async function parseSlug(slug: string): Promise<ParsedRoute | null> {
   return { serviceSlug, brandSlug, citySlug };
 }
 
-export async function generateStaticParams(): Promise<Params[]> {
-  const [services, brands, cities] = await Promise.all([
-    prisma.service.findMany({
-      where: { active: true },
-      include: { brands: { include: { brand: true } } },
-    }),
-    prisma.brand.findMany({ where: { active: true } }),
-    prisma.city.findMany({ where: { active: true } }),
-  ]);
+// dynamicParams=true permite renderizar URLs no pre-generadas vía ISR.
+// Si el build no tiene DATABASE_URL (primer deploy en Vercel antes de
+// crear Postgres) → returns [] y todas las páginas se generan on-demand
+// en la primera visita después de configurar la BD.
+export const dynamicParams = true;
 
-  const params: Params[] = [];
-  for (const sv of services) {
-    // Variante 1: solo servicio (catálogo amplio)
-    params.push({ slug: sv.slug });
-    // Variante 2: servicio + ciudad
-    for (const city of cities) {
-      params.push({ slug: `${sv.slug}-${city.slug}` });
-    }
-    // Variante 3: servicio + marca + ciudad (la más SEO-friendly long tail)
-    if (sv.requiresBrand) {
-      for (const sb of sv.brands) {
-        for (const city of cities) {
-          params.push({ slug: `${sv.slug}-${sb.brand.slug}-${city.slug}` });
+export async function generateStaticParams(): Promise<Params[]> {
+  try {
+    const [services, brands, cities] = await Promise.all([
+      prisma.service.findMany({
+        where: { active: true },
+        include: { brands: { include: { brand: true } } },
+      }),
+      prisma.brand.findMany({ where: { active: true } }),
+      prisma.city.findMany({ where: { active: true } }),
+    ]);
+
+    const params: Params[] = [];
+    for (const sv of services) {
+      // Variante 1: solo servicio (catálogo amplio)
+      params.push({ slug: sv.slug });
+      // Variante 2: servicio + ciudad
+      for (const city of cities) {
+        params.push({ slug: `${sv.slug}-${city.slug}` });
+      }
+      // Variante 3: servicio + marca + ciudad (la más SEO-friendly long tail)
+      if (sv.requiresBrand) {
+        for (const sb of sv.brands) {
+          for (const city of cities) {
+            params.push({ slug: `${sv.slug}-${sb.brand.slug}-${city.slug}` });
+          }
         }
       }
     }
+    return params;
+  } catch (err) {
+    console.warn("[generateStaticParams] DB unavailable, deferring to ISR:", err instanceof Error ? err.message : err);
+    return [];
   }
-  return params;
 }
 
 export async function generateMetadata({
