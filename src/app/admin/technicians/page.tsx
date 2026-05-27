@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { formatMXN } from "@/lib/utils";
 import { BentoCard, BentoIcon } from "@/components/ui/BentoCard";
 import { requireAdminOrRedirect } from "../_lib/auth-guard";
+import { VerifyControls } from "./_components/TechnicianCard";
 
 export const dynamic = "force-dynamic";
 
@@ -56,13 +57,13 @@ export default async function AdminTechniciansPage() {
                 {t.user.phone && <div className="flex items-center gap-1.5"><Phone className="h-3 w-3" />{t.user.phone}</div>}
               </div>
 
-              <div className="flex flex-wrap gap-2 border-t border-slate-200/80 pt-3">
-                <Pill icon={<Wallet className="h-3 w-3" />} label={`${t._count.purchases} compras`} />
-                <Pill icon={<MapPin className="h-3 w-3" />} label={`${t.coverages.length} ciudades`} />
-                <Pill icon={<Wrench className="h-3 w-3" />} label={`${t.services.length} servicios`} />
-                {t.verified
-                  ? <Pill icon={<BadgeCheck className="h-3 w-3" />} label="Verificado" tone="emerald" />
-                  : <Pill icon={<BadgeCheck className="h-3 w-3" />} label="Pendiente" tone="amber" />}
+              <div className="space-y-3 border-t border-slate-200/80 pt-3">
+                <div className="flex flex-wrap gap-2">
+                  <Pill icon={<Wallet className="h-3 w-3" />} label={`${t._count.purchases} compras`} />
+                  <Pill icon={<MapPin className="h-3 w-3" />} label={`${t.coverages.length} ciudades`} />
+                  <Pill icon={<Wrench className="h-3 w-3" />} label={`${t.services.length} servicios`} />
+                </div>
+                <VerifyControls id={t.id} verified={t.verified} active={t.active} />
               </div>
             </BentoCard>
           ))

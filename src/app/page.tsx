@@ -86,9 +86,15 @@ export default async function HomePage() {
             </div>
             <span className="text-lg tracking-tight">FixHub</span>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
-              href="/panel"
+              href="/panel/registro"
+              className="hidden rounded-full px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-indigo-700 sm:inline-block"
+            >
+              Únete como técnico
+            </Link>
+            <Link
+              href="/panel/login"
               className="rounded-full border border-slate-200 px-5 py-2 text-sm font-medium text-zinc-700 transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
             >
               Soy Técnico

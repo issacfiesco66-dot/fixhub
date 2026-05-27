@@ -300,6 +300,24 @@ export function TechnicianDashboard({
       </header>
 
       <main className="w-full px-6 py-8 sm:px-10 lg:px-16">
+        {/* ── Banner: cuenta sin verificar (bloquea compra de leads) ── */}
+        {!technician.verified && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm shadow-sm shadow-amber-500/10"
+          >
+            <Sparkles className="h-5 w-5 shrink-0 text-amber-600" />
+            <div className="text-amber-800">
+              <div className="font-semibold">Tu cuenta está pendiente de verificación</div>
+              <div className="mt-0.5 text-amber-700">
+                Mientras tanto NO recibes leads. El equipo de FixHub está revisando tu perfil
+                (normalmente &lt;24 hrs). Te avisamos en cuanto te aprobemos.
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* ── Hero greeting ────────────────────────────────── */}
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>

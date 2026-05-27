@@ -99,11 +99,19 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 text-center text-[11px] text-zinc-500">
-          ¿Eres admin?{" "}
-          <a href="/admin/login" className="text-indigo-600 hover:text-indigo-700">
-            Acceder al panel administrativo
-          </a>
+        <div className="mt-6 space-y-2 text-center text-[11px] text-zinc-500">
+          <div>
+            ¿Aún no tienes cuenta?{" "}
+            <a href="/panel/registro" className="font-semibold text-indigo-600 hover:text-indigo-700">
+              Regístrate como técnico
+            </a>
+          </div>
+          <div>
+            ¿Eres admin?{" "}
+            <a href="/admin/login" className="text-indigo-600 hover:text-indigo-700">
+              Panel administrativo
+            </a>
+          </div>
         </div>
       </motion.div>
     </main>
