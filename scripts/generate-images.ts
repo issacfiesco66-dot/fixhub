@@ -30,26 +30,41 @@ type Asset = {
 };
 
 const ASSETS: Asset[] = [
+  // ── HERO ─────────────────────────────────────────────────────
   {
     slug: "hero",
     size: "1536x1024",
     prompt: `Friendly professional Mexican male technician in clean dark blue uniform, holding a tablet, standing confidently in a modern bright kitchen. A premium washing machine and refrigerator are visible in the background. Soft natural lighting through a window. Wide cinematic landscape composition. Slight indigo glow accent. Photorealistic editorial photography for a service marketplace landing page. ${STYLE}`,
   },
+
+  // ── CATEGORÍAS (5 nuevas) ───────────────────────────────────
   {
-    slug: "cat-linea-blanca",
+    slug: "cat-emergencia",
     size: "1024x1024",
-    prompt: `Isometric 3D illustration of a modern white washing machine and a stainless steel refrigerator side by side, floating slightly with a subtle indigo glow underneath. Clean minimal pale background with soft shadows. Square composition, centered. Vibrant but elegant. ${STYLE}`,
+    prompt: `Isometric 3D illustration showing emergency home service icons: a stylized red alert badge, a key, a wrench and a lightning bolt, arranged elegantly. Subtle red and indigo gradient background suggesting urgency. Soft shadows. Square centered composition. ${STYLE}`,
   },
   {
-    slug: "cat-plomeria",
+    slug: "cat-reparacion-soporte",
     size: "1024x1024",
-    prompt: `Isometric 3D illustration of glossy chrome water pipes and a polished modern faucet, with a few crisp blue water droplets in motion. Subtle indigo gradient background. Soft shadows. Square composition, centered. Clean technical aesthetic. ${STYLE}`,
+    prompt: `Isometric 3D illustration of a modern white washing machine, a stainless steel refrigerator and a sleek minisplit AC unit arranged together with subtle indigo glow. Clean minimal background with soft shadows. Square centered composition. ${STYLE}`,
   },
   {
-    slug: "cat-electricidad",
+    slug: "cat-mantenimiento-hogar",
     size: "1024x1024",
-    prompt: `Isometric 3D illustration of a modern white electrical outlet and a switch panel, with a small stylized golden lightning bolt floating above. Subtle indigo gradient background. Square composition. Modern minimal aesthetic. ${STYLE}`,
+    prompt: `Isometric 3D illustration of a modern paint brush, a fumigation spray can and cleaning gloves arranged on a clean surface. A small house silhouette in the background. Subtle indigo gradient. Soft shadows. Square centered composition. ${STYLE}`,
   },
+  {
+    slug: "cat-automotriz-logistica",
+    size: "1024x1024",
+    prompt: `Isometric 3D illustration of a modern compact tow truck and a small moving van side by side on a clean road segment. Subtle indigo gradient background. Soft shadows. Square centered composition. ${STYLE}`,
+  },
+  {
+    slug: "cat-especializados-prevision",
+    size: "1024x1024",
+    prompt: `Isometric 3D illustration of a stylized heart icon, a small white candle and a paw print arranged together with soft warm lighting. Calm indigo and warm white gradient background. Respectful, elegant tone. Square centered composition. ${STYLE}`,
+  },
+
+  // ── SERVICIOS EXISTENTES (línea blanca + plomería/eléctrica) ──
   {
     slug: "svc-reparacion-lavadoras",
     size: "1024x1024",
@@ -74,6 +89,63 @@ const ASSETS: Asset[] = [
     slug: "svc-instalacion-electrica",
     size: "1024x1024",
     prompt: `Professional photograph of an electrician with safety gloves working on a modern white electrical breaker panel mounted on a clean wall. Tools visible. Editorial service photography style. ${STYLE}`,
+  },
+
+  // ── SERVICIOS NUEVOS (12) ───────────────────────────────────
+  {
+    slug: "svc-cerrajeria",
+    size: "1024x1024",
+    prompt: `Professional service photo: a friendly uniformed technician at a modern front door of a clean residential home, holding a small set of new shiny brass keys in one hand. He has a small toolbox beside him on the porch. Daylight, welcoming and trustworthy mood. Editorial service photography style. ${STYLE}`,
+  },
+  {
+    slug: "svc-climatizacion",
+    size: "1024x1024",
+    prompt: `Professional photograph of a technician on a small ladder installing a sleek white minisplit air conditioning unit on a clean modern wall. Bright sunlit living room. Editorial photography style. ${STYLE}`,
+  },
+  {
+    slug: "svc-fumigacion-control-plagas",
+    size: "1024x1024",
+    prompt: `Professional photograph of a pest control technician in clean white protective gear and mask, holding a professional spray applicator in a modern kitchen. Clean and reassuring composition (no insects visible). Editorial photography style. ${STYLE}`,
+  },
+  {
+    slug: "svc-limpieza-especializada",
+    size: "1024x1024",
+    prompt: `Professional photograph of a cleaning specialist with gloves polishing a modern living room sofa with a steam cleaner. Bright spotless interior. Editorial photography style. ${STYLE}`,
+  },
+  {
+    slug: "svc-impermeabilizacion",
+    size: "1024x1024",
+    prompt: `Professional photograph of a worker applying a roller with white waterproofing coating onto a modern flat rooftop. Blue sky in the background. Editorial photography style. ${STYLE}`,
+  },
+  {
+    slug: "svc-pintura-tablaroca",
+    size: "1024x1024",
+    prompt: `Professional photograph of a painter rolling fresh light gray paint onto a clean smooth wall with crisp masking tape edges visible. Bright modern interior. Editorial photography style. ${STYLE}`,
+  },
+  {
+    slug: "svc-mecanica-domicilio",
+    size: "1024x1024",
+    prompt: `Professional photograph of a mechanic with clean uniform using a diagnostic scanner connected to the dashboard of a modern car parked in a residential driveway. Open hood visible in background. Editorial photography style. ${STYLE}`,
+  },
+  {
+    slug: "svc-gruas-auxilio-vial",
+    size: "1024x1024",
+    prompt: `Professional photograph of a modern compact tow truck with subtle amber warning lights lifting the front of a stalled car on a quiet road. Daytime, clean composition. Editorial photography style. ${STYLE}`,
+  },
+  {
+    slug: "svc-fletes-mudanzas",
+    size: "1024x1024",
+    prompt: `Professional photograph of two movers in clean uniforms carrying a wrapped sofa toward a parked small moving van in a residential street. Daytime, friendly mood. Editorial photography style. ${STYLE}`,
+  },
+  {
+    slug: "svc-servicios-funerarios",
+    size: "1024x1024",
+    prompt: `Quiet elegant indoor scene with soft warm light: a small white candle on a wooden surface beside a single white flower. Calm, respectful, dignified tone. No people, no symbols of grief. ${STYLE}`,
+  },
+  {
+    slug: "svc-cuidado-mascotas",
+    size: "1024x1024",
+    prompt: `Professional photograph of a friendly veterinarian in white coat gently examining a small healthy dog on a clean exam table at a modern bright veterinary clinic. Warm reassuring scene. Editorial photography style. ${STYLE}`,
   },
 ];
 

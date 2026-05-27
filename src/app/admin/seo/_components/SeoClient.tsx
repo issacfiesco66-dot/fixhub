@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -171,10 +171,10 @@ export function SeoClient({ tuples, totalContents }: { tuples: Tuple[]; totalCon
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tight">
-            <Globe className="h-7 w-7 text-brand-400" />
+            <Globe className="h-7 w-7 text-indigo-600" />
             SEO Programático
           </h1>
-          <p className="mt-1 text-sm text-zinc-400">
+          <p className="mt-1 text-sm text-zinc-500">
             Matriz de contenidos únicos por tupla (servicio × marca × ciudad) para alimentar el motor de SEO local.
           </p>
         </div>
@@ -182,7 +182,7 @@ export function SeoClient({ tuples, totalContents }: { tuples: Tuple[]; totalCon
         {coverage.filled < coverage.total && !batch?.running && (
           <button
             onClick={handleGenerateAllMissing}
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-brand-500/30 hover:shadow-glow-indigo"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/30"
           >
             <Wand2 className="h-4 w-4" />
             Generar {coverage.total - coverage.filled} faltantes con IA
@@ -197,22 +197,22 @@ export function SeoClient({ tuples, totalContents }: { tuples: Tuple[]; totalCon
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="mb-5 rounded-2xl border border-brand-500/30 bg-brand-500/10 p-4"
+            className="mb-5 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4"
           >
             <div className="mb-2 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm font-semibold text-brand-200">
+              <div className="flex items-center gap-2 text-sm font-semibold text-indigo-700">
                 <Loader2 className={`h-4 w-4 ${batch.running ? "animate-spin" : ""}`} />
                 {batch.running
                   ? `Generando ${batch.done}/${batch.total}...`
                   : `Generación detenida: ${batch.done}/${batch.total}`}
               </div>
               <div className="flex items-center gap-3 text-xs">
-                <span className="text-money-400">✓ {batch.ok}</span>
+                <span className="text-emerald-700">✓ {batch.ok}</span>
                 {batch.err > 0 && <span className="text-red-400">✗ {batch.err}</span>}
                 {batch.running && (
                   <button
                     onClick={abortBatch}
-                    className="inline-flex items-center gap-1 rounded-lg border border-red-500/30 bg-red-500/10 px-2 py-1 text-red-300 hover:bg-red-500/15"
+                    className="inline-flex items-center gap-1 rounded-lg border border-red-300 bg-red-50 px-2 py-1 text-red-700 hover:bg-red-500/15"
                   >
                     <Square className="h-3 w-3 fill-current" />
                     Detener
@@ -220,11 +220,11 @@ export function SeoClient({ tuples, totalContents }: { tuples: Tuple[]; totalCon
                 )}
               </div>
             </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-zinc-900/60">
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/70">
               <motion.div
                 animate={{ width: `${(batch.done / batch.total) * 100}%` }}
                 transition={{ duration: 0.3 }}
-                className="h-full bg-gradient-to-r from-brand-500 to-brand-400"
+                className="h-full bg-gradient-to-r from-indigo-500 to-indigo-400"
               />
             </div>
           </motion.div>
@@ -240,15 +240,15 @@ export function SeoClient({ tuples, totalContents }: { tuples: Tuple[]; totalCon
             </BentoIcon>
           </div>
           <div className="text-[10px] uppercase tracking-wider text-zinc-500">Cobertura</div>
-          <div className="mt-1 text-3xl font-bold tabular-nums text-zinc-100">
+          <div className="mt-1 text-3xl font-bold tabular-nums text-zinc-900">
             {coverage.pct}%
           </div>
           <div className="text-[11px] text-zinc-500">
             {coverage.filled} / {coverage.total} tuplas con contenido único
           </div>
-          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-zinc-800">
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
             <div
-              className="h-full bg-gradient-to-r from-money-500 to-money-400"
+              className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400"
               style={{ width: `${coverage.pct}%` }}
             />
           </div>
@@ -261,7 +261,7 @@ export function SeoClient({ tuples, totalContents }: { tuples: Tuple[]; totalCon
             </BentoIcon>
           </div>
           <div className="text-[10px] uppercase tracking-wider text-zinc-500">Páginas indexables</div>
-          <div className="mt-1 text-3xl font-bold tabular-nums text-zinc-100">{coverage.total}</div>
+          <div className="mt-1 text-3xl font-bold tabular-nums text-zinc-900">{coverage.total}</div>
           <div className="text-[11px] text-zinc-500">en sitemap.xml</div>
         </BentoCard>
 
@@ -272,7 +272,7 @@ export function SeoClient({ tuples, totalContents }: { tuples: Tuple[]; totalCon
             </BentoIcon>
           </div>
           <div className="text-[10px] uppercase tracking-wider text-zinc-500">Pendientes de redactar</div>
-          <div className="mt-1 text-3xl font-bold tabular-nums text-zinc-100">
+          <div className="mt-1 text-3xl font-bold tabular-nums text-zinc-900">
             {coverage.total - coverage.filled}
           </div>
           <div className="text-[11px] text-zinc-500">usa el prompt IA debajo →</div>
@@ -290,8 +290,8 @@ export function SeoClient({ tuples, totalContents }: { tuples: Tuple[]; totalCon
               onClick={() => setFilter(f)}
               className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                 active
-                  ? "border-brand-500/40 bg-brand-500/15 text-brand-300"
-                  : "border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:bg-zinc-900"
+                  ? "border-indigo-500/40 bg-indigo-500/10 text-indigo-700"
+                  : "border-slate-200 bg-white/60 text-zinc-500 hover:bg-white"
               }`}
             >
               {labels[f]}
@@ -299,12 +299,12 @@ export function SeoClient({ tuples, totalContents }: { tuples: Tuple[]; totalCon
           );
         })}
 
-        <div className="ml-auto flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/40 px-3 py-1.5">
+        <div className="ml-auto flex items-center gap-2 rounded-xl border border-slate-200 bg-white/60 px-3 py-1.5">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar servicio / marca / ciudad…"
-            className="w-72 bg-transparent text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none"
+            className="w-72 bg-transparent text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none"
           />
         </div>
       </div>
@@ -317,7 +317,7 @@ export function SeoClient({ tuples, totalContents }: { tuples: Tuple[]; totalCon
             Sin resultados para estos filtros.
           </div>
         ) : (
-          <div className="divide-y divide-zinc-800/60">
+          <div className="divide-y divide-slate-200/80">
             {filtered.map((t) => {
               const key = tupleKey(t);
               return (
@@ -367,7 +367,7 @@ function TupleRow({
   const filled = !!tuple.content;
 
   return (
-    <div className={`flex flex-wrap items-center justify-between gap-3 p-4 hover:bg-zinc-900/30 ${generating ? "bg-brand-500/5" : ""}`}>
+    <div className={`flex flex-wrap items-center justify-between gap-3 p-4 hover:bg-slate-50/60 ${generating ? "bg-indigo-500/5" : ""}`}>
       <div className="flex min-w-0 flex-1 items-start gap-3">
         {generating ? (
           <BentoIcon tone="indigo">
@@ -384,22 +384,22 @@ function TupleRow({
         )}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <div className="font-semibold text-zinc-100">
+            <div className="font-semibold text-zinc-900">
               {tuple.serviceName}
-              {tuple.brandName && <span className="text-zinc-400"> · {tuple.brandName}</span>}
-              <span className="text-brand-400"> · {tuple.cityName}</span>
+              {tuple.brandName && <span className="text-zinc-500"> · {tuple.brandName}</span>}
+              <span className="text-indigo-600"> · {tuple.cityName}</span>
             </div>
             {filled ? (
-              <span className="rounded-full bg-money-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-money-400">
+              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
                 {tuple.content!.source}
               </span>
             ) : (
-              <span className="rounded-full bg-zinc-700/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
                 Sin contenido
               </span>
             )}
             {filled && tuple.content!.reviewed && (
-              <span className="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-400">
+              <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-600">
                 Revisado
               </span>
             )}
@@ -419,7 +419,7 @@ function TupleRow({
           href={url}
           target="_blank"
           rel="noopener"
-          className="rounded-lg border border-zinc-800 bg-zinc-900 p-2 text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200"
+          className="rounded-lg border border-slate-200 bg-white p-2 text-zinc-500 hover:bg-slate-100/60 hover:text-zinc-900"
           title="Ver página"
         >
           <ExternalLink className="h-3.5 w-3.5" />
@@ -428,7 +428,7 @@ function TupleRow({
           <button
             onClick={onGenerate}
             disabled={generating}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-brand-500/30 bg-brand-500/10 px-3 py-1.5 text-xs font-semibold text-brand-300 hover:bg-brand-500/20 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-500/20 disabled:opacity-50"
             title="Generar con OpenAI gpt-4o-mini"
           >
             {generating ? (
@@ -442,7 +442,7 @@ function TupleRow({
         <button
           onClick={onEdit}
           disabled={generating}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-brand-500/40 hover:bg-brand-500/10 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:border-indigo-500/40 hover:bg-indigo-500/10 disabled:opacity-50"
         >
           <Edit3 className="h-3.5 w-3.5" />
           {filled ? "Editar" : "Redactar"}
@@ -522,17 +522,17 @@ function EditContentModal({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-zinc-950/80 backdrop-blur-md"
+        className="absolute inset-0 bg-slate-50/60 backdrop-blur-md"
       />
       <motion.div
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-zinc-800 bg-zinc-900/95 p-6 shadow-bento-dark backdrop-blur-xl"
+        className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-[0_4px_24px_-8px_rgba(99,102,241,0.08)] backdrop-blur-xl"
       >
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-500 hover:bg-zinc-800"
+          className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-500 hover:bg-slate-100"
         >
           <X className="h-4 w-4" />
         </button>
@@ -546,22 +546,22 @@ function EditContentModal({
             <p className="text-xs text-zinc-500">
               {tuple.serviceName}
               {tuple.brandName && ` · ${tuple.brandName}`} ·{" "}
-              <span className="text-brand-400">{tuple.cityName}, {tuple.stateName}</span>
+              <span className="text-indigo-600">{tuple.cityName}, {tuple.stateName}</span>
             </p>
           </div>
         </div>
 
         {/* Prompt IA — copy/paste a ChatGPT/Claude */}
-        <details className="mb-5 rounded-xl border border-brand-500/30 bg-brand-500/5">
-          <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-brand-300">
+        <details className="mb-5 rounded-xl border border-indigo-500/30 bg-indigo-500/5">
+          <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-indigo-700">
             <Wand2 className="mr-1.5 inline h-3.5 w-3.5" />
             Prompt para generar con IA (ChatGPT / Claude)
           </summary>
-          <div className="border-t border-brand-500/20 p-4">
-            <pre className="max-h-48 overflow-y-auto rounded-lg bg-zinc-950/60 p-3 text-[11px] text-zinc-300 whitespace-pre-wrap font-mono">{aiPrompt}</pre>
+          <div className="border-t border-indigo-500/20 p-4">
+            <pre className="max-h-48 overflow-y-auto rounded-lg bg-slate-50/60 p-3 text-[11px] text-zinc-700 whitespace-pre-wrap font-mono">{aiPrompt}</pre>
             <button
               onClick={copyPrompt}
-              className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-brand-500/30 bg-brand-500/10 px-3 py-1.5 text-xs font-medium text-brand-300 hover:bg-brand-500/15"
+              className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-500/10"
             >
               <Copy className="h-3 w-3" />
               {copied ? "¡Copiado!" : "Copiar prompt"}
@@ -615,18 +615,18 @@ function EditContentModal({
             </div>
           </Field>
 
-          <label className="flex items-center gap-2 text-sm text-zinc-300">
+          <label className="flex items-center gap-2 text-sm text-zinc-700">
             <input
               type="checkbox"
               checked={reviewed}
               onChange={(e) => setReviewed(e.target.checked)}
-              className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-brand-500 focus:ring-brand-500"
+              className="h-4 w-4 rounded border-slate-200 bg-white text-indigo-500 focus:ring-indigo-500"
             />
             Marcar como revisado (calidad aprobada)
           </label>
 
           {error && (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+            <div className="rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
               {error}
             </div>
           )}
@@ -637,7 +637,7 @@ function EditContentModal({
                 type="button"
                 onClick={deleteContent}
                 disabled={busy}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-300 hover:bg-red-500/20 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 hover:bg-red-500/20 disabled:opacity-50"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 Eliminar
@@ -646,14 +646,14 @@ function EditContentModal({
             <button
               type="button"
               onClick={onClose}
-              className="ml-auto rounded-xl border border-zinc-800 px-4 py-2.5 text-sm font-medium text-zinc-400 hover:bg-zinc-800/50"
+              className="ml-auto rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-zinc-500 hover:bg-slate-100/60"
             >
               Cancelar
             </button>
             <button
               onClick={save}
               disabled={busy || h1.length < 5 || body.length < 50}
-              className="rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:shadow-glow-indigo disabled:opacity-50"
+              className="rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:shadow-lg hover:shadow-indigo-500/30 disabled:opacity-50"
             >
               {busy ? "Guardando..." : "Guardar contenido"}
             </button>
@@ -676,7 +676,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 const inputCls =
-  "w-full rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15";
+  "w-full rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/15";
 
 function defaultH1(t: Tuple): string {
   const parts = [t.serviceName];

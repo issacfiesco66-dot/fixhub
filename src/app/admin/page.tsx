@@ -59,43 +59,18 @@ export default async function AdminDashboard() {
   const conversionRate = totalLeads ? Math.round((purchasedLeads / totalLeads) * 100) : 0;
 
   return (
-    <div className="px-6 py-8">
+    <div className="px-6 py-8 lg:px-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="mt-1 text-sm text-zinc-400">Vista general de la plataforma — últimos 30 días</p>
+        <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Dashboard</h1>
+        <p className="mt-1 text-sm text-zinc-500">Vista general de la plataforma — últimos 30 días</p>
       </div>
 
       {/* Bento Grid */}
       <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard
-          tone="emerald"
-          icon={<Wallet className="h-5 w-5" />}
-          label="Ingresos 30d"
-          value={formatMXN(revenueAgg._sum.amount ?? 0)}
-          hint="recargas confirmadas"
-          big
-        />
-        <StatCard
-          tone="indigo"
-          icon={<Briefcase className="h-5 w-5" />}
-          label="Leads totales"
-          value={String(totalLeads)}
-          hint={`+${leads30d} en 30d`}
-        />
-        <StatCard
-          tone="amber"
-          icon={<TrendingUp className="h-5 w-5" />}
-          label="Conversión"
-          value={`${conversionRate}%`}
-          hint={`${purchasedLeads} comprados`}
-        />
-        <StatCard
-          tone="indigo"
-          icon={<Users className="h-5 w-5" />}
-          label="Técnicos"
-          value={`${verifiedTechs}/${totalTechs}`}
-          hint="verificados / total"
-        />
+        <StatCard tone="emerald" icon={<Wallet className="h-5 w-5" />} label="Ingresos 30d" value={formatMXN(revenueAgg._sum.amount ?? 0)} hint="recargas confirmadas" big />
+        <StatCard tone="indigo" icon={<Briefcase className="h-5 w-5" />} label="Leads totales" value={String(totalLeads)} hint={`+${leads30d} en 30d`} />
+        <StatCard tone="amber" icon={<TrendingUp className="h-5 w-5" />} label="Conversión" value={`${conversionRate}%`} hint={`${purchasedLeads} comprados`} />
+        <StatCard tone="indigo" icon={<Users className="h-5 w-5" />} label="Técnicos" value={`${verifiedTechs}/${totalTechs}`} hint="verificados / total" />
       </div>
 
       {/* Pipeline de prospects + leads pendientes */}
@@ -107,14 +82,11 @@ export default async function AdminDashboard() {
                 <Target className="h-4 w-4" />
               </BentoIcon>
               <div>
-                <div className="text-sm font-semibold">Pipeline de Prospects</div>
+                <div className="text-sm font-semibold text-zinc-900">Pipeline de Prospects</div>
                 <div className="text-[11px] text-zinc-500">Outbound</div>
               </div>
             </div>
-            <Link
-              href="/admin/prospects"
-              className="text-xs font-medium text-brand-400 hover:text-brand-300"
-            >
+            <Link href="/admin/prospects" className="text-xs font-medium text-indigo-600 hover:text-indigo-500">
               Ver todos →
             </Link>
           </div>
@@ -133,11 +105,11 @@ export default async function AdminDashboard() {
                 <Clock className="h-4 w-4" />
               </BentoIcon>
               <div>
-                <div className="text-sm font-semibold">Leads activos en marketplace</div>
+                <div className="text-sm font-semibold text-zinc-900">Leads activos en marketplace</div>
                 <div className="text-[11px] text-zinc-500">{pendingLeads} disponibles para técnicos</div>
               </div>
             </div>
-            <Link href="/admin/leads" className="text-xs font-medium text-brand-400 hover:text-brand-300">
+            <Link href="/admin/leads" className="text-xs font-medium text-indigo-600 hover:text-indigo-500">
               Gestionar →
             </Link>
           </div>
@@ -146,14 +118,11 @@ export default async function AdminDashboard() {
               <p className="text-sm text-zinc-500">Aún no hay leads.</p>
             ) : (
               latestLeads.map((l) => (
-                <div
-                  key={l.id}
-                  className="flex items-center justify-between rounded-xl border border-zinc-800/60 bg-zinc-900/40 px-3 py-2 text-sm"
-                >
+                <div key={l.id} className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-white/60 px-3 py-2 text-sm">
                   <div>
-                    <div className="font-medium text-zinc-100">
+                    <div className="font-medium text-zinc-900">
                       {l.service.name}
-                      {l.brand && <span className="text-zinc-400"> · {l.brand.name}</span>}
+                      {l.brand && <span className="text-zinc-500"> · {l.brand.name}</span>}
                     </div>
                     <div className="text-[11px] text-zinc-500">
                       {l.city.name} · {new Date(l.createdAt).toLocaleString("es-MX", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "short" })}
@@ -175,9 +144,9 @@ export default async function AdminDashboard() {
               <BentoIcon tone="emerald">
                 <Target className="h-4 w-4" />
               </BentoIcon>
-              <div className="text-sm font-semibold">Prospects recientes</div>
+              <div className="text-sm font-semibold text-zinc-900">Prospects recientes</div>
             </div>
-            <Link href="/admin/prospects" className="text-xs font-medium text-brand-400 hover:text-brand-300">
+            <Link href="/admin/prospects" className="text-xs font-medium text-indigo-600 hover:text-indigo-500">
               Ver todos →
             </Link>
           </div>
@@ -186,12 +155,9 @@ export default async function AdminDashboard() {
               <p className="text-sm text-zinc-500">Sin prospects todavía.</p>
             ) : (
               latestProspects.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center justify-between rounded-xl border border-zinc-800/60 bg-zinc-900/40 px-3 py-2 text-sm"
-                >
+                <div key={p.id} className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-white/60 px-3 py-2 text-sm">
                   <div>
-                    <div className="font-medium text-zinc-100">{p.name}</div>
+                    <div className="font-medium text-zinc-900">{p.name}</div>
                     <div className="text-[11px] text-zinc-500">
                       {p.city} · {p.source}
                     </div>
@@ -208,7 +174,7 @@ export default async function AdminDashboard() {
             <BentoIcon tone="indigo">
               <ShieldCheck className="h-4 w-4" />
             </BentoIcon>
-            <div className="text-sm font-semibold">Acciones rápidas</div>
+            <div className="text-sm font-semibold text-zinc-900">Acciones rápidas</div>
           </div>
           <div className="space-y-2">
             <QuickLink href="/admin/prospects" label="Importar prospects" icon={<Target className="h-4 w-4" />} />
@@ -221,30 +187,14 @@ export default async function AdminDashboard() {
   );
 }
 
-function StatCard({
-  tone,
-  icon,
-  label,
-  value,
-  hint,
-  big = false,
-}: {
-  tone: "indigo" | "emerald" | "amber";
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  hint: string;
-  big?: boolean;
-}) {
+function StatCard({ tone, icon, label, value, hint, big = false }: { tone: "indigo" | "emerald" | "amber"; icon: React.ReactNode; label: string; value: string; hint: string; big?: boolean }) {
   return (
     <BentoCard className="p-5">
       <div className="mb-4">
         <BentoIcon tone={tone}>{icon}</BentoIcon>
       </div>
       <div className="text-[10px] uppercase tracking-wider text-zinc-500">{label}</div>
-      <div className={`mt-1 font-bold tabular-nums text-zinc-100 ${big ? "text-3xl" : "text-2xl"}`}>
-        {value}
-      </div>
+      <div className={`mt-1 font-bold tabular-nums text-zinc-900 ${big ? "text-3xl" : "text-2xl"}`}>{value}</div>
       <div className="text-[11px] text-zinc-500">{hint}</div>
     </BentoCard>
   );
@@ -252,57 +202,46 @@ function StatCard({
 
 function PipelineRow({ label, value, tone }: { label: string; value: number; tone: "indigo" | "amber" | "emerald" | "zinc" }) {
   const cls = {
-    indigo: "bg-brand-500/15 text-brand-400",
-    amber: "bg-amber-500/15 text-amber-400",
-    emerald: "bg-money-500/15 text-money-400",
-    zinc: "bg-zinc-700/40 text-zinc-400",
+    indigo: "bg-indigo-500/10 text-indigo-700 ring-indigo-500/20",
+    amber: "bg-amber-500/10 text-amber-700 ring-amber-500/20",
+    emerald: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/20",
+    zinc: "bg-zinc-100 text-zinc-600 ring-zinc-200",
   }[tone];
   return (
-    <div className="flex items-center justify-between rounded-xl border border-zinc-800/60 bg-zinc-900/40 px-3 py-2">
-      <span className="text-sm text-zinc-300">{label}</span>
-      <span className={`rounded-full px-2 py-0.5 text-xs font-bold tabular-nums ${cls}`}>{value}</span>
+    <div className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-white/60 px-3 py-2">
+      <span className="text-sm text-zinc-700">{label}</span>
+      <span className={`rounded-full px-2 py-0.5 text-xs font-bold ring-1 tabular-nums ${cls}`}>{value}</span>
     </div>
   );
 }
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; cls: string }> = {
-    PENDING: { label: "Pendiente", cls: "bg-amber-500/15 text-amber-400" },
-    PURCHASED: { label: "Vendido", cls: "bg-money-500/15 text-money-400" },
-    EXPIRED: { label: "Expirado", cls: "bg-zinc-700/40 text-zinc-400" },
-    CANCELLED: { label: "Cancelado", cls: "bg-red-500/15 text-red-400" },
+    PENDING: { label: "Pendiente", cls: "bg-amber-500/10 text-amber-700 ring-amber-500/20" },
+    PURCHASED: { label: "Vendido", cls: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/20" },
+    EXPIRED: { label: "Expirado", cls: "bg-zinc-100 text-zinc-600 ring-zinc-200" },
+    CANCELLED: { label: "Cancelado", cls: "bg-red-500/10 text-red-700 ring-red-500/20" },
   };
   const m = map[status] ?? map.PENDING;
-  return (
-    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${m.cls}`}>
-      {m.label}
-    </span>
-  );
+  return <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ring-1 ${m.cls}`}>{m.label}</span>;
 }
 
 function ProspectBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; cls: string }> = {
-    NEW: { label: "Nuevo", cls: "bg-brand-500/15 text-brand-400" },
-    CONTACTED: { label: "Contactado", cls: "bg-amber-500/15 text-amber-400" },
-    CONVERTED: { label: "Convertido", cls: "bg-money-500/15 text-money-400" },
-    DISCARDED: { label: "Descartado", cls: "bg-zinc-700/40 text-zinc-400" },
+    NEW: { label: "Nuevo", cls: "bg-indigo-500/10 text-indigo-700 ring-indigo-500/20" },
+    CONTACTED: { label: "Contactado", cls: "bg-amber-500/10 text-amber-700 ring-amber-500/20" },
+    CONVERTED: { label: "Convertido", cls: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/20" },
+    DISCARDED: { label: "Descartado", cls: "bg-zinc-100 text-zinc-600 ring-zinc-200" },
   };
   const m = map[status] ?? map.NEW;
-  return (
-    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${m.cls}`}>
-      {m.label}
-    </span>
-  );
+  return <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ring-1 ${m.cls}`}>{m.label}</span>;
 }
 
 function QuickLink({ href, label, icon }: { href: string; label: string; icon: React.ReactNode }) {
   return (
-    <Link
-      href={href}
-      className="group flex items-center justify-between rounded-xl border border-zinc-800/60 bg-zinc-900/40 px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:border-brand-500/40 hover:bg-zinc-900"
-    >
+    <Link href={href} className="group flex items-center justify-between rounded-xl border border-slate-200/80 bg-white/60 px-3 py-2.5 text-sm text-zinc-700 transition-all hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700">
       <span className="flex items-center gap-2">
-        <span className="text-brand-400">{icon}</span>
+        <span className="text-indigo-600">{icon}</span>
         {label}
       </span>
       <ArrowRight className="h-3.5 w-3.5 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />

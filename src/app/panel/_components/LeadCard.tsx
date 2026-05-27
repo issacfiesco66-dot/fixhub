@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { MapPin, Clock, Zap, AlertTriangle } from "lucide-react";
@@ -29,14 +29,14 @@ const urgencyMeta = {
   URGENT: {
     label: "Urgente",
     icon: Zap,
-    cls: "bg-amber-500/15 text-amber-400 ring-amber-500/30",
+    cls: "bg-amber-500/10 text-amber-700 ring-amber-500/30",
     accent: "from-amber-500 to-orange-500",
   },
   NORMAL: {
     label: "Normal",
     icon: Zap,
-    cls: "bg-brand-500/15 text-brand-400 ring-brand-500/30",
-    accent: "from-brand-500 to-indigo-600",
+    cls: "bg-indigo-500/10 text-indigo-600 ring-indigo-500/20",
+    accent: "from-indigo-500 to-indigo-600",
   },
 } as const;
 
@@ -81,10 +81,10 @@ export function LeadCard({ lead, onPurchase }: { lead: Lead; onPurchase: () => v
         </span>
       </div>
 
-      <h3 className="text-base font-semibold text-zinc-100">
+      <h3 className="text-base font-semibold text-zinc-900">
         {lead.service.name}
         {lead.brand && (
-          <span className="text-brand-400"> · {lead.brand.name}</span>
+          <span className="text-indigo-600"> · {lead.brand.name}</span>
         )}
       </h3>
 
@@ -97,12 +97,12 @@ export function LeadCard({ lead, onPurchase }: { lead: Lead; onPurchase: () => v
         </span>
       </div>
 
-      <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-zinc-400">{lead.failure}</p>
+      <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-zinc-500">{lead.failure}</p>
 
       <button
         onClick={handle}
         disabled={busy}
-        className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-brand-500/20 transition-all hover:shadow-glow-indigo disabled:opacity-50"
+        className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-500/20 transition-all hover:shadow-lg hover:shadow-indigo-500/30 disabled:opacity-50"
       >
         <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
         <span className="relative inline-flex items-center justify-center gap-1.5">

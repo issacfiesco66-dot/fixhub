@@ -6,14 +6,14 @@ type Props = {
   hover?: boolean;
 };
 
-// Card primitiva premium. Por defecto: oscura (admin + panel del técnico viven en
-// dark mode). Para usarla en light mode pasa el override por className.
+// Card primitiva premium estilo home: blanca con borde sutil, glass-friendly,
+// shadow indigo difusa. Override con className si necesitas dark explícito.
 export function BentoCard({ className, children, hover = false }: Props) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-zinc-800/80 bg-zinc-900/70 shadow-bento-dark",
-        hover && "transition-all duration-200 hover:border-brand-500/40 hover:shadow-glow-indigo",
+        "rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_4px_24px_-8px_rgba(99,102,241,0.08)] backdrop-blur",
+        hover && "transition-all duration-200 hover:border-indigo-300 hover:shadow-[0_12px_40px_-10px_rgba(99,102,241,0.25)]",
         className
       )}
     >
@@ -30,11 +30,11 @@ export function BentoIcon({
   tone?: "indigo" | "emerald" | "amber" | "red" | "zinc";
 }) {
   const tones = {
-    indigo: "bg-brand-500/15 text-brand-400 ring-brand-500/30",
-    emerald: "bg-money-500/15 text-money-400 ring-money-500/30",
-    amber: "bg-amber-500/15 text-amber-400 ring-amber-500/30",
-    red: "bg-red-500/15 text-red-400 ring-red-500/30",
-    zinc: "bg-zinc-700/40 text-zinc-300 ring-zinc-700/50",
+    indigo: "bg-indigo-500/10 text-indigo-600 ring-indigo-500/20",
+    emerald: "bg-emerald-500/10 text-emerald-600 ring-emerald-500/20",
+    amber: "bg-amber-500/10 text-amber-600 ring-amber-500/20",
+    red: "bg-red-500/10 text-red-600 ring-red-500/20",
+    zinc: "bg-zinc-100 text-zinc-600 ring-zinc-200",
   } as const;
   return (
     <div

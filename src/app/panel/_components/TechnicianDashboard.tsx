@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -195,15 +195,22 @@ export function TechnicianDashboard({
   const lowBalance = balance < 450;
 
   return (
-    <div className="dark min-h-screen bg-zinc-950 text-zinc-100">
-      {/* Glow ambiental */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[500px] bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.15),transparent_60%)]" />
+    <div className="relative min-h-screen bg-slate-50/40 text-zinc-900">
+      {/* Patrón dotted + glow indigo — mismo lenguaje visual que la home */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.15),transparent_55%)]"
+      />
 
-      {/* ── Header ───────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      {/* ── Header — light glass full-width ──────────────────── */}
+      <header className="sticky top-0 z-30 w-full border-b border-slate-200/70 bg-white/70 backdrop-blur-md">
+        <div className="flex w-full items-center justify-between px-6 py-4 sm:px-10 lg:px-16">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 shadow-glow-indigo">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-lg shadow-indigo-500/30">
               <Wrench className="h-4 w-4 text-white" />
             </div>
             <div>
@@ -217,13 +224,13 @@ export function TechnicianDashboard({
           <div className="flex items-center gap-3">
             <ConnectionIndicator connected={connected} />
 
-            <div className="hidden items-center gap-2.5 rounded-xl border border-zinc-800 bg-zinc-900/60 px-3.5 py-2 sm:flex">
-              <Wallet className="h-4 w-4 text-money-400" />
+            <div className="hidden items-center gap-2.5 rounded-xl border border-slate-200 bg-white/70 px-3.5 py-2 sm:flex">
+              <Wallet className="h-4 w-4 text-emerald-700" />
               <div className="leading-tight">
                 <div className="text-[10px] uppercase tracking-wide text-zinc-500">Saldo</div>
                 <div
                   className={`text-sm font-semibold tabular-nums ${
-                    lowBalance ? "text-red-400" : "text-zinc-100"
+                    lowBalance ? "text-red-400" : "text-zinc-900"
                   }`}
                 >
                   {formatMXN(balance)}
@@ -236,7 +243,7 @@ export function TechnicianDashboard({
                 setRechargeReason("manual");
                 setShowRecharge(true);
               }}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-money-600 px-3.5 py-2 text-sm font-medium text-white shadow-glow-emerald transition-all hover:bg-money-500"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-500"
             >
               <Plus className="h-4 w-4" />
               Recargar
@@ -245,7 +252,7 @@ export function TechnicianDashboard({
             <form action="/api/auth/technician-logout" method="post">
               <button
                 type="submit"
-                className="rounded-xl border border-zinc-800 p-2 text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-zinc-200"
+                className="rounded-xl border border-slate-200 p-2 text-zinc-500 transition-colors hover:bg-white hover:text-zinc-900"
                 title="Cerrar sesión"
               >
                 <LogOut className="h-4 w-4" />
@@ -255,21 +262,21 @@ export function TechnicianDashboard({
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-6 py-8">
+      <main className="w-full px-6 py-8 sm:px-10 lg:px-16">
         {/* ── Hero greeting ────────────────────────────────── */}
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               Hola, {technician.name.split(" ")[0]}
-              <Sparkles className="ml-2 inline h-6 w-6 text-amber-400" />
+              <Sparkles className="ml-2 inline h-6 w-6 text-amber-700" />
             </h1>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-zinc-500">
               Hoy estás cubriendo{" "}
-              <span className="font-medium text-zinc-300">
+              <span className="font-medium text-zinc-700">
                 {technician.services.length} servicios
               </span>{" "}
               en{" "}
-              <span className="font-medium text-zinc-300">
+              <span className="font-medium text-zinc-700">
                 {technician.coverages.length} ciudades
               </span>
               .
@@ -279,7 +286,7 @@ export function TechnicianDashboard({
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-3.5 py-2 text-sm text-red-300"
+              className="flex items-center gap-2 rounded-xl border border-red-300 bg-red-50 px-3.5 py-2 text-sm text-red-700"
             >
               <Bell className="h-4 w-4 animate-pulse" />
               Saldo bajo — podrías perder leads
@@ -329,18 +336,18 @@ export function TechnicianDashboard({
               </h2>
               <p className="text-xs text-zinc-500">Actualización en tiempo real</p>
             </div>
-            <div className="flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/60 px-3 py-1 text-xs text-zinc-400">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-money-500" />
+            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs text-zinc-500">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
               Live
             </div>
           </div>
 
           {leads.length === 0 ? (
             <BentoCard className="border-dashed py-16 text-center">
-              <div className="mx-auto mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-800/60">
+              <div className="mx-auto mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100/60">
                 <Bell className="h-5 w-5 text-zinc-500" />
               </div>
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-zinc-500">
                 Sin leads activos. Te avisaremos al instante cuando aparezca uno.
               </p>
             </BentoCard>
@@ -373,7 +380,7 @@ export function TechnicianDashboard({
           {recentPurchases.length === 0 ? (
             <p className="text-sm text-zinc-500">Aún no has comprado ningún lead.</p>
           ) : (
-            <BentoCard className="divide-y divide-zinc-800/80 overflow-hidden">
+            <BentoCard className="divide-y divide-slate-200/80 overflow-hidden">
               {recentPurchases.map((p) => (
                 <div key={p.id} className="flex items-center justify-between p-4">
                   <div className="flex items-start gap-3">
@@ -381,10 +388,10 @@ export function TechnicianDashboard({
                       <Briefcase className="h-4 w-4" />
                     </BentoIcon>
                     <div>
-                      <div className="text-sm font-medium text-zinc-100">
+                      <div className="text-sm font-medium text-zinc-900">
                         {p.serviceName}
                         {p.brandName && (
-                          <span className="text-zinc-400"> · {p.brandName}</span>
+                          <span className="text-zinc-500"> · {p.brandName}</span>
                         )}
                       </div>
                       <div className="mt-0.5 flex items-center gap-2 text-xs text-zinc-500">
@@ -398,7 +405,7 @@ export function TechnicianDashboard({
                         <span className="text-zinc-700">•</span>
                         <a
                           href={`tel:${p.clientPhone}`}
-                          className="text-brand-400 hover:underline"
+                          className="text-indigo-600 hover:underline"
                         >
                           {p.clientPhone}
                         </a>
@@ -475,7 +482,7 @@ function BentoStat({
         <BentoIcon tone={tone}>{icon}</BentoIcon>
       </div>
       <div className="text-xs uppercase tracking-wider text-zinc-500">{label}</div>
-      <div className={`mt-1 font-bold tabular-nums text-zinc-100 ${big ? "text-3xl" : "text-2xl"}`}>
+      <div className={`mt-1 font-bold tabular-nums text-zinc-900 ${big ? "text-3xl" : "text-2xl"}`}>
         {value}
       </div>
       <div className="text-[11px] text-zinc-500">{hint}</div>
@@ -488,13 +495,13 @@ function ConnectionIndicator({ connected }: { connected: boolean }) {
     <div
       className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium ${
         connected
-          ? "border-money-500/30 bg-money-500/10 text-money-400"
-          : "border-amber-500/30 bg-amber-500/10 text-amber-400"
+          ? "border-emerald-300 bg-emerald-500/10 text-emerald-700"
+          : "border-amber-300 bg-amber-500/10 text-amber-700"
       }`}
     >
       <span
         className={`h-1.5 w-1.5 rounded-full ${
-          connected ? "animate-pulse bg-money-400" : "animate-pulse bg-amber-400"
+          connected ? "animate-pulse bg-emerald-500" : "animate-pulse bg-amber-400"
         }`}
       />
       {connected ? "EN VIVO" : "CONECTANDO"}

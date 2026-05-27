@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -58,7 +58,7 @@ export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
   const urgencyConfig = {
     EMERGENCY: { label: "EMERGENCIA", icon: AlertTriangle, gradient: "from-red-500 via-rose-500 to-red-600" },
     URGENT: { label: "URGENTE", icon: Zap, gradient: "from-amber-500 via-orange-500 to-red-500" },
-    NORMAL: { label: "TRABAJO NUEVO", icon: Zap, gradient: "from-brand-500 via-indigo-500 to-violet-500" },
+    NORMAL: { label: "TRABAJO NUEVO", icon: Zap, gradient: "from-indigo-500 via-indigo-500 to-violet-500" },
   } as const;
   const u = urgencyConfig[alert.urgency];
   const UrgencyIcon = u.icon;
@@ -80,7 +80,7 @@ export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-zinc-950/70 backdrop-blur-md"
+        className="absolute inset-0 bg-slate-50/60 backdrop-blur-md"
       />
 
       {/* Modal — glassmorphism + opcional shake en últimos 15s */}
@@ -89,7 +89,7 @@ export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0 }}
         transition={{ type: "spring", stiffness: 320, damping: 28 }}
-        className={`relative w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-white/80 shadow-2xl backdrop-blur-2xl dark:bg-zinc-900/85 ${
+        className={`relative w-full max-w-md overflow-hidden rounded-3xl border border-white/40 bg-white/80 shadow-2xl backdrop-blur-2xl ${
           isUrgent ? "animate-shake" : ""
         }`}
         style={{
@@ -101,13 +101,13 @@ export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
         {/* Botón cerrar */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-black/10 hover:text-zinc-900 dark:hover:bg-white/10 dark:hover:text-zinc-100"
+          className="absolute right-4 top-4 z-10 rounded-full p-1.5 text-zinc-500 transition-colors hover:bg-black/10 hover:text-zinc-900"
         >
           <X className="h-4 w-4" />
         </button>
 
         {/* COUNTDOWN BAR: gradiente que se reduce */}
-        <div className="relative h-1.5 w-full overflow-hidden bg-zinc-200/60 dark:bg-zinc-800/60">
+        <div className="relative h-1.5 w-full overflow-hidden bg-zinc-200/60">
           <motion.div
             initial={{ width: "100%" }}
             animate={{ width: `${progress}%` }}
@@ -131,19 +131,19 @@ export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
         <div className="p-6">
           {/* Título */}
           <div className="mb-4 text-center">
-            <div className="mb-1 text-[11px] font-medium uppercase tracking-widest text-amber-600 dark:text-amber-400">
+            <div className="mb-1 text-[11px] font-medium uppercase tracking-widest text-amber-600">
               ⚠️ Nuevo trabajo disponible
             </div>
-            <h2 className="text-2xl font-bold leading-tight text-zinc-900 dark:text-zinc-50">
+            <h2 className="text-2xl font-bold leading-tight text-zinc-900">
               {alert.service}
               {alert.brand && (
-                <span className="text-brand-600 dark:text-brand-400"> · {alert.brand}</span>
+                <span className="text-indigo-600"> · {alert.brand}</span>
               )}
             </h2>
           </div>
 
           {/* Ubicación */}
-          <div className="mb-4 flex items-center justify-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+          <div className="mb-4 flex items-center justify-center gap-1.5 text-sm text-zinc-600">
             <MapPin className="h-3.5 w-3.5" />
             <span>
               {alert.zone ? `${alert.zone}, ` : ""}
@@ -152,11 +152,11 @@ export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
           </div>
 
           {/* Descripción de la falla */}
-          <div className="mb-5 rounded-2xl border border-zinc-200/80 bg-zinc-50/80 p-3.5 backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-800/50">
+          <div className="mb-5 rounded-2xl border border-zinc-200/80 bg-zinc-50/80 p-3.5 backdrop-blur">
             <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
               Detalle de la falla
             </div>
-            <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+            <p className="text-sm leading-relaxed text-zinc-700">
               {alert.failure}
             </p>
           </div>
@@ -165,8 +165,8 @@ export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
           <div
             className={`mb-5 flex items-center justify-between rounded-2xl border px-4 py-2.5 text-sm transition-colors ${
               isUrgent
-                ? "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300"
-                : "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-200"
+                ? "border-red-300 bg-red-50 text-red-700"
+                : "border-amber-300 bg-amber-500/10 text-amber-700"
             }`}
           >
             <span className="flex items-center gap-1.5">
@@ -175,7 +175,7 @@ export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
             </span>
             <span className="flex items-center gap-1.5 font-mono font-bold tabular-nums">
               <Clock className="h-3.5 w-3.5" />
-              <span className={isUrgent ? "animate-pulse text-red-600 dark:text-red-400" : ""}>
+              <span className={isUrgent ? "animate-pulse text-red-600" : ""}>
                 {String(secondsLeft).padStart(2, "0")}s
               </span>
             </span>
@@ -188,7 +188,7 @@ export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
             className={`group relative w-full overflow-hidden rounded-2xl px-6 py-4 text-base font-bold text-white shadow-lg transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:hover:scale-100 ${
               isUrgent
                 ? "bg-gradient-to-r from-red-600 to-rose-700 shadow-red-500/30"
-                : "bg-gradient-to-r from-money-500 to-money-600 shadow-money-500/40"
+                : "bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-emerald-500/40"
             }`}
           >
             {/* Glow shimmer */}
@@ -209,7 +209,7 @@ export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
 
           <button
             onClick={onClose}
-            className="mt-3 w-full text-center text-[11px] uppercase tracking-wider text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+            className="mt-3 w-full text-center text-[11px] uppercase tracking-wider text-zinc-500 hover:text-zinc-600"
           >
             Ignorar
           </button>

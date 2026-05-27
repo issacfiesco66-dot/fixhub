@@ -6,103 +6,156 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Seeding FixHub database...");
 
-  // ── Categorías ────────────────────────────────────────────────
-  const lineaBlanca = await prisma.category.upsert({
-    where: { slug: "linea-blanca" },
-    update: {},
+  // ── Categorías (nueva taxonomía verticalizada) ────────────────
+  const emergencia = await prisma.category.upsert({
+    where: { slug: "emergencia" },
+    update: {
+      name: "Servicios de Emergencia",
+      description: "Atención inmediata 24/7 para urgencias del hogar",
+      icon: "alert-triangle",
+      order: 1,
+    },
     create: {
-      slug: "linea-blanca",
-      name: "Línea Blanca",
-      description: "Reparación de electrodomésticos de cocina y lavandería",
-      icon: "washing-machine",
+      slug: "emergencia",
+      name: "Servicios de Emergencia",
+      description: "Atención inmediata 24/7 para urgencias del hogar",
+      icon: "alert-triangle",
       order: 1,
     },
   });
 
-  const plomeria = await prisma.category.upsert({
-    where: { slug: "plomeria" },
-    update: {},
+  const reparacionSoporte = await prisma.category.upsert({
+    where: { slug: "reparacion-soporte" },
+    update: {
+      name: "Reparación y Soporte Técnico",
+      description: "Línea blanca, refrigeración y climatización",
+      icon: "wrench",
+      order: 2,
+    },
     create: {
-      slug: "plomeria",
-      name: "Plomería",
-      description: "Fugas, instalaciones y mantenimiento hidráulico",
+      slug: "reparacion-soporte",
+      name: "Reparación y Soporte Técnico",
+      description: "Línea blanca, refrigeración y climatización",
       icon: "wrench",
       order: 2,
     },
   });
 
-  const electricidad = await prisma.category.upsert({
-    where: { slug: "electricidad" },
-    update: {},
+  const mantenimientoHogar = await prisma.category.upsert({
+    where: { slug: "mantenimiento-hogar" },
+    update: {
+      name: "Mantenimiento del Hogar",
+      description: "Fumigación, limpieza, impermeabilización y acabados",
+      icon: "home",
+      order: 3,
+    },
     create: {
-      slug: "electricidad",
-      name: "Electricidad",
-      description: "Instalaciones, fallas eléctricas y mantenimiento",
-      icon: "zap",
+      slug: "mantenimiento-hogar",
+      name: "Mantenimiento del Hogar",
+      description: "Fumigación, limpieza, impermeabilización y acabados",
+      icon: "home",
       order: 3,
     },
   });
 
-  // ── Servicios ─────────────────────────────────────────────────
-  const lavadoras = await prisma.service.upsert({
-    where: { slug: "reparacion-lavadoras" },
-    update: {},
+  const automotrizLogistica = await prisma.category.upsert({
+    where: { slug: "automotriz-logistica" },
+    update: {
+      name: "Automotriz y Logística",
+      description: "Mecánica a domicilio, grúas, fletes y mudanzas",
+      icon: "truck",
+      order: 4,
+    },
     create: {
-      slug: "reparacion-lavadoras",
-      name: "Reparación de Lavadoras",
-      description: "Diagnóstico y reparación de cualquier marca de lavadora",
-      categoryId: lineaBlanca.id,
-      requiresBrand: true,
-      basePrice: 450,
+      slug: "automotriz-logistica",
+      name: "Automotriz y Logística",
+      description: "Mecánica a domicilio, grúas, fletes y mudanzas",
+      icon: "truck",
+      order: 4,
     },
   });
 
-  const refrigeradores = await prisma.service.upsert({
-    where: { slug: "reparacion-refrigeradores" },
-    update: {},
+  const especializadosPrevision = await prisma.category.upsert({
+    where: { slug: "especializados-prevision" },
+    update: {
+      name: "Especializados y Previsión",
+      description: "Servicios funerarios y cuidado de mascotas",
+      icon: "heart",
+      order: 5,
+    },
     create: {
-      slug: "reparacion-refrigeradores",
-      name: "Reparación de Refrigeradores",
-      categoryId: lineaBlanca.id,
-      requiresBrand: true,
-      basePrice: 500,
+      slug: "especializados-prevision",
+      name: "Especializados y Previsión",
+      description: "Servicios funerarios y cuidado de mascotas",
+      icon: "heart",
+      order: 5,
     },
   });
 
-  const secadoras = await prisma.service.upsert({
-    where: { slug: "reparacion-secadoras" },
-    update: {},
-    create: {
-      slug: "reparacion-secadoras",
-      name: "Reparación de Secadoras",
-      categoryId: lineaBlanca.id,
-      requiresBrand: true,
-      basePrice: 450,
-    },
-  });
+  // ── Servicios — 17 totales con la nueva taxonomía ─────────────
+  // Los 5 existentes se MUEVEN a nuevas categorías (preservamos ServiceContent
+  // generado por IA porque se relaciona por ID, no por slug).
 
-  await prisma.service.upsert({
-    where: { slug: "fuga-de-agua" },
-    update: {},
-    create: {
-      slug: "fuga-de-agua",
-      name: "Reparación de Fugas de Agua",
-      categoryId: plomeria.id,
-      requiresBrand: false,
-      basePrice: 350,
-    },
-  });
+  type SvcSpec = { slug: string; name: string; categoryId: string; requiresBrand: boolean; basePrice: number; description?: string };
+  const serviceSpecs: SvcSpec[] = [
+    // EMERGENCIA — urgente, 24/7, precio premium
+    { slug: "cerrajeria", name: "Cerrajería 24/7", categoryId: emergencia.id, requiresBrand: false, basePrice: 500, description: "Apertura de puertas, autos y cambio de combinación 24/7" },
+    { slug: "fuga-de-agua", name: "Reparación de Fugas y Plomería", categoryId: emergencia.id, requiresBrand: false, basePrice: 400, description: "Destape de drenajes, fugas, boilers y mantenimiento hidráulico" },
+    { slug: "instalacion-electrica", name: "Electricistas a Domicilio", categoryId: emergencia.id, requiresBrand: false, basePrice: 450, description: "Cortocircuitos, instalaciones eléctricas y cajas de fusibles" },
 
-  await prisma.service.upsert({
-    where: { slug: "instalacion-electrica" },
-    update: {},
-    create: {
-      slug: "instalacion-electrica",
-      name: "Instalación Eléctrica",
-      categoryId: electricidad.id,
-      requiresBrand: false,
-      basePrice: 400,
-    },
+    // REPARACIÓN Y SOPORTE — línea blanca + clima
+    { slug: "reparacion-refrigeradores", name: "Reparación de Refrigeradores", categoryId: reparacionSoporte.id, requiresBrand: true, basePrice: 500, description: "Carga de gas, fallas de motor y sistemas No Frost" },
+    { slug: "reparacion-lavadoras", name: "Reparación de Lavadoras", categoryId: reparacionSoporte.id, requiresBrand: true, basePrice: 450, description: "Transmisiones, bandas y tarjetas electrónicas" },
+    { slug: "reparacion-secadoras", name: "Reparación de Secadoras", categoryId: reparacionSoporte.id, requiresBrand: true, basePrice: 450, description: "Sensores de humedad, resistencias y bandas" },
+    { slug: "climatizacion", name: "Climatización y Minisplits", categoryId: reparacionSoporte.id, requiresBrand: false, basePrice: 500, description: "Instalación y mantenimiento de aire acondicionado y minisplits" },
+
+    // MANTENIMIENTO DEL HOGAR — preventivo, precio medio
+    { slug: "fumigacion-control-plagas", name: "Fumigación y Control de Plagas", categoryId: mantenimientoHogar.id, requiresBrand: false, basePrice: 350, description: "Tratamiento contra chinches, cucarachas y termitas" },
+    { slug: "limpieza-especializada", name: "Limpieza Especializada", categoryId: mantenimientoHogar.id, requiresBrand: false, basePrice: 350, description: "Lavado de cisternas, tinacos, salas y alfombras" },
+    { slug: "impermeabilizacion", name: "Impermeabilización", categoryId: mantenimientoHogar.id, requiresBrand: false, basePrice: 400, description: "Aplicación de aislantes térmicos y reparación de goteras" },
+    { slug: "pintura-tablaroca", name: "Pintura y Tablaroca", categoryId: mantenimientoHogar.id, requiresBrand: false, basePrice: 350, description: "Acabados residenciales y comerciales" },
+
+    // AUTOMOTRIZ Y LOGÍSTICA
+    { slug: "mecanica-domicilio", name: "Mecánica a Domicilio", categoryId: automotrizLogistica.id, requiresBrand: false, basePrice: 400, description: "Afinaciones, frenos y diagnóstico con escáner" },
+    { slug: "gruas-auxilio-vial", name: "Grúas y Auxilio Vial", categoryId: automotrizLogistica.id, requiresBrand: false, basePrice: 500, description: "Auxilio vial, paso de corriente y traslado de vehículos 24h" },
+    { slug: "fletes-mudanzas", name: "Fletes y Mudanzas", categoryId: automotrizLogistica.id, requiresBrand: false, basePrice: 400, description: "Transportes locales y foráneos" },
+
+    // ESPECIALIZADOS Y PREVISIÓN
+    { slug: "servicios-funerarios", name: "Servicios Funerarios", categoryId: especializadosPrevision.id, requiresBrand: false, basePrice: 400, description: "Paquetes de previsión, cremación y capillas (humanos y mascotas)" },
+    { slug: "cuidado-mascotas", name: "Cuidado de Mascotas", categoryId: especializadosPrevision.id, requiresBrand: false, basePrice: 350, description: "Clínicas veterinarias de urgencia y estética canina" },
+  ];
+
+  const servicesBySlug: Record<string, { id: string; name: string; categoryId: string; requiresBrand: boolean }> = {};
+  for (const s of serviceSpecs) {
+    const row = await prisma.service.upsert({
+      where: { slug: s.slug },
+      update: {
+        name: s.name,
+        categoryId: s.categoryId,
+        requiresBrand: s.requiresBrand,
+        basePrice: s.basePrice,
+        description: s.description,
+      },
+      create: {
+        slug: s.slug,
+        name: s.name,
+        categoryId: s.categoryId,
+        requiresBrand: s.requiresBrand,
+        basePrice: s.basePrice,
+        description: s.description,
+      },
+    });
+    servicesBySlug[s.slug] = row;
+  }
+
+  const lavadoras = servicesBySlug["reparacion-lavadoras"];
+  const refrigeradores = servicesBySlug["reparacion-refrigeradores"];
+  const secadoras = servicesBySlug["reparacion-secadoras"];
+
+  // ── Borrar categorías obsoletas (línea-blanca, plomeria, electricidad) ──
+  // Sus servicios ya fueron reasignados arriba via upsert. Ahora limpiamos.
+  await prisma.category.deleteMany({
+    where: { slug: { in: ["linea-blanca", "plomeria", "electricidad"] } },
   });
 
   // ── Marcas ────────────────────────────────────────────────────

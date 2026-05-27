@@ -2,40 +2,51 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   Wrench,
-  WashingMachine,
-  Zap,
-  Droplets,
   ShieldCheck,
   Clock,
   ArrowRight,
   MapPin,
   Sparkles,
+  AlertTriangle,
+  Home,
+  Truck,
+  Heart,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { HeroCTA } from "@/components/HeroCTA";
 
 export const revalidate = 3600;
 
+// Icono Lucide por categoría (nueva taxonomía)
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  "linea-blanca": WashingMachine,
-  "plomeria": Droplets,
-  "electricidad": Zap,
+  "emergencia": AlertTriangle,
+  "reparacion-soporte": Wrench,
+  "mantenimiento-hogar": Home,
+  "automotriz-logistica": Truck,
+  "especializados-prevision": Heart,
 };
 
-// Imagen ilustrativa generada por IA para cada categoría (en /public/images/)
-// y alt-text optimizado para SEO local.
+// Imagen ilustrativa IA por categoría + alt SEO local
 const categoryImage: Record<string, { src: string; alt: string }> = {
-  "linea-blanca": {
-    src: "/images/cat-linea-blanca.png",
-    alt: "Reparación de línea blanca: lavadora y refrigerador modernos a domicilio",
+  "emergencia": {
+    src: "/images/cat-emergencia.png",
+    alt: "Servicios de emergencia 24/7: cerrajería, plomería y electricistas a domicilio",
   },
-  plomeria: {
-    src: "/images/cat-plomeria.png",
-    alt: "Servicios de plomería: fugas, tuberías e instalaciones hidráulicas",
+  "reparacion-soporte": {
+    src: "/images/cat-reparacion-soporte.png",
+    alt: "Reparación de línea blanca, refrigeradores y climatización a domicilio",
   },
-  electricidad: {
-    src: "/images/cat-electricidad.png",
-    alt: "Servicios eléctricos: instalaciones, fallas y mantenimiento",
+  "mantenimiento-hogar": {
+    src: "/images/cat-mantenimiento-hogar.png",
+    alt: "Mantenimiento del hogar: fumigación, limpieza, impermeabilización y pintura",
+  },
+  "automotriz-logistica": {
+    src: "/images/cat-automotriz-logistica.png",
+    alt: "Servicios automotrices y logísticos: mecánica a domicilio, grúas y fletes",
+  },
+  "especializados-prevision": {
+    src: "/images/cat-especializados-prevision.png",
+    alt: "Servicios especializados: funerarios, previsión y cuidado de mascotas",
   },
 };
 
@@ -89,33 +100,33 @@ export default async function HomePage() {
         </div>
       </header>
 
-      {/* Hero — split layout (texto + imagen) con glassmorphism */}
+      {/* Hero — full-width, ancho generoso, alto razonable */}
       <section className="relative">
-        <div className="mx-auto max-w-7xl px-6 pt-16 pb-24 sm:px-10 lg:px-16">
-          <div className="overflow-hidden rounded-[2rem] border border-white/40 bg-white/70 shadow-[0_8px_60px_-15px_rgba(99,102,241,0.2)] backdrop-blur-md">
-            <div className="grid items-center gap-8 lg:grid-cols-5">
-              {/* Texto — 3 columnas */}
-              <div className="px-6 py-12 sm:px-12 lg:col-span-3 lg:py-16">
-                <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-emerald-300/60 bg-emerald-50/80 px-3.5 py-1 text-xs font-medium text-emerald-700 backdrop-blur">
-                  <Sparkles className="h-3 w-3" />
+        <div className="w-full px-6 pt-10 pb-20 sm:px-10 lg:px-16 lg:pt-16 lg:pb-24">
+          <div className="mx-auto max-w-[1600px] overflow-hidden rounded-[2rem] border border-white/40 bg-white/70 shadow-[0_20px_80px_-20px_rgba(99,102,241,0.25)] backdrop-blur-md">
+            <div className="grid items-stretch gap-0 lg:grid-cols-5">
+              {/* Texto — 3 cols, padding generoso pero compacto */}
+              <div className="flex flex-col justify-center px-8 py-14 sm:px-12 sm:py-16 lg:col-span-3 lg:py-20 lg:pl-16 lg:pr-10">
+                <div className="mb-7 inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-300/60 bg-emerald-50/80 px-4 py-1.5 text-xs font-medium text-emerald-700 backdrop-blur">
+                  <Sparkles className="h-3.5 w-3.5" />
                   Técnicos verificados · Servicio el mismo día
                 </div>
 
-                <h1 className="mb-5 text-5xl font-bold leading-[1.02] tracking-tight text-zinc-900 md:text-6xl">
+                <h1 className="mb-6 text-4xl font-bold leading-[1.05] tracking-tight text-balance text-zinc-900 sm:text-5xl md:text-6xl">
                   Reparaciones a domicilio,{" "}
                   <span className="bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
                     en minutos
                   </span>
                 </h1>
 
-                <p className="mb-10 max-w-xl text-lg leading-relaxed text-zinc-600">
-                  Electrodomésticos, plomería, electricidad y más. El mismo día, en tu zona,
-                  con garantía.
+                <p className="mb-10 max-w-xl text-base leading-relaxed text-zinc-600 md:text-lg">
+                  Electrodomésticos, plomería, electricidad y más. El mismo día,
+                  en tu zona, con garantía.
                 </p>
 
                 <HeroCTA />
 
-                <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-zinc-500">
+                <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-zinc-500 md:text-base">
                   <span className="flex items-center gap-1.5">
                     <Clock className="h-4 w-4 text-emerald-600" />
                     Respuesta en &lt;5 min
@@ -131,9 +142,9 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              {/* Imagen — 2 columnas, con glow indigo detrás */}
-              <div className="relative h-72 w-full overflow-hidden lg:col-span-2 lg:h-full lg:min-h-[480px]">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-transparent to-violet-500/10" />
+              {/* Imagen — 2 cols, altura matchea el contenido */}
+              <div className="relative h-72 w-full overflow-hidden sm:h-96 lg:col-span-2 lg:h-auto lg:min-h-[520px]">
+                <div className="absolute inset-0 z-10 bg-gradient-to-br from-indigo-500/15 via-transparent to-violet-500/10 mix-blend-overlay" />
                 <Image
                   src="/images/hero.png"
                   alt="Técnico profesional FixHub atendiendo a un cliente en casa moderna en México"

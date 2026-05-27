@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -62,7 +62,7 @@ export function RechargeModal({ packages, balance, reason, onClose }: Props) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-zinc-950/70 backdrop-blur-md"
+        className="absolute inset-0 bg-slate-50/60 backdrop-blur-md"
       />
 
       <motion.div
@@ -70,11 +70,11 @@ export function RechargeModal({ packages, balance, reason, onClose }: Props) {
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 28 }}
-        className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-white/15 bg-white/90 shadow-2xl backdrop-blur-2xl dark:bg-zinc-900/90"
+        className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-white/40 bg-white/90 shadow-2xl backdrop-blur-2xl"
       >
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 rounded-full p-1.5 text-zinc-500 transition-colors hover:bg-black/10 hover:text-zinc-900 dark:hover:bg-white/10 dark:hover:text-zinc-100"
+          className="absolute right-4 top-4 z-10 rounded-full p-1.5 text-zinc-500 transition-colors hover:bg-black/10 hover:text-zinc-900"
         >
           <X className="h-4 w-4" />
         </button>
@@ -84,7 +84,7 @@ export function RechargeModal({ packages, balance, reason, onClose }: Props) {
           className={`px-6 py-4 ${
             insufficient
               ? "bg-gradient-to-r from-red-500 to-rose-600"
-              : "bg-gradient-to-r from-money-500 to-money-700"
+              : "bg-gradient-to-r from-emerald-500 to-emerald-700"
           }`}
         >
           <div className="flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider text-white">
@@ -104,9 +104,9 @@ export function RechargeModal({ packages, balance, reason, onClose }: Props) {
 
         <div className="p-6">
           {insufficient && (
-            <div className="mb-5 flex items-start gap-3 rounded-2xl border border-red-200/60 bg-red-50/80 p-4 text-sm dark:border-red-500/20 dark:bg-red-500/10">
+            <div className="mb-5 flex items-start gap-3 rounded-2xl border border-red-200/60 bg-red-50/80 p-4 text-sm">
               <AlertTriangle className="h-5 w-5 shrink-0 text-red-500" />
-              <div className="text-red-800 dark:text-red-200">
+              <div className="text-red-800">
                 Tu saldo actual es{" "}
                 <strong className="tabular-nums">{formatMXN(balance)}</strong>. Recarga ahora y
                 no pierdas el trabajo — otros técnicos están viendo este lead en este momento.
@@ -114,7 +114,7 @@ export function RechargeModal({ packages, balance, reason, onClose }: Props) {
             </div>
           )}
 
-          <p className="mb-5 text-center text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mb-5 text-center text-sm text-zinc-600">
             Elige el paquete ideal. Mientras más recargas, más bonus de cortesía.
           </p>
 
@@ -130,8 +130,8 @@ export function RechargeModal({ packages, balance, reason, onClose }: Props) {
                   onClick={() => setSelectedId(p.id)}
                   className={`group relative overflow-hidden rounded-2xl border-2 p-4 text-left transition-all ${
                     isSelected
-                      ? "border-brand-500 bg-brand-50/60 shadow-glow-indigo dark:bg-brand-500/10"
-                      : "border-zinc-200 hover:border-brand-300 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50"
+                      ? "border-indigo-500 bg-indigo-50/60 shadow-lg shadow-indigo-500/30"
+                      : "border-zinc-200 hover:border-indigo-300 hover:bg-zinc-50/60"
                   }`}
                 >
                   {p.popular && (
@@ -140,7 +140,7 @@ export function RechargeModal({ packages, balance, reason, onClose }: Props) {
                     </div>
                   )}
                   {isSelected && (
-                    <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-white">
+                    <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-white">
                       <Check className="h-3 w-3" />
                     </div>
                   )}
@@ -148,21 +148,21 @@ export function RechargeModal({ packages, balance, reason, onClose }: Props) {
                   <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
                     {p.name}
                   </div>
-                  <div className="mb-1 text-2xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+                  <div className="mb-1 text-2xl font-bold tabular-nums text-zinc-900">
                     {formatMXN(p.amount)}
                   </div>
                   {p.bonus > 0 && (
-                    <div className="flex items-center gap-1 text-xs font-medium text-money-600 dark:text-money-400">
+                    <div className="flex items-center gap-1 text-xs font-medium text-emerald-600">
                       <Sparkles className="h-3 w-3" />+{formatMXN(p.bonus)} bono
                     </div>
                   )}
-                  <div className="mt-3 border-t border-zinc-200/80 pt-2 text-xs text-zinc-500 dark:border-zinc-800/80">
+                  <div className="mt-3 border-t border-zinc-200/80 pt-2 text-xs text-zinc-500">
                     Recibes{" "}
-                    <strong className="text-zinc-700 dark:text-zinc-300">
+                    <strong className="text-zinc-700">
                       {formatMXN(total)}
                     </strong>
                     <br />
-                    ≈ <strong className="text-brand-600 dark:text-brand-400">{leadCount} leads</strong>
+                    ≈ <strong className="text-indigo-600">{leadCount} leads</strong>
                   </div>
                 </button>
               );
@@ -170,18 +170,18 @@ export function RechargeModal({ packages, balance, reason, onClose }: Props) {
           </div>
 
           {/* Métodos de pago */}
-          <div className="mb-5 flex flex-wrap items-center justify-center gap-3 rounded-xl bg-zinc-100/60 px-4 py-2.5 text-xs text-zinc-600 dark:bg-zinc-800/40 dark:text-zinc-400">
+          <div className="mb-5 flex flex-wrap items-center justify-center gap-3 rounded-xl bg-zinc-100/60 px-4 py-2.5 text-xs text-zinc-600">
             <Lock className="h-3.5 w-3.5" />
             <span className="font-medium">Pago seguro:</span>
             <span>Tarjeta</span>
-            <span className="text-zinc-300 dark:text-zinc-700">·</span>
+            <span className="text-zinc-700">·</span>
             <span>OXXO</span>
-            <span className="text-zinc-300 dark:text-zinc-700">·</span>
-            <span className="text-zinc-400">por Stripe</span>
+            <span className="text-zinc-700">·</span>
+            <span className="text-zinc-500">por Stripe</span>
           </div>
 
           {error && (
-            <div className="mb-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300">
+            <div className="mb-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">
               {error}
             </div>
           )}
@@ -189,7 +189,7 @@ export function RechargeModal({ packages, balance, reason, onClose }: Props) {
           <button
             onClick={handleCheckout}
             disabled={loading || !selectedId}
-            className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-money-500 to-money-600 px-6 py-4 text-base font-bold text-white shadow-lg shadow-money-500/30 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+            className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4 text-base font-bold text-white shadow-lg shadow-emerald-500/30 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
           >
             <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
             <span className="relative inline-flex items-center justify-center gap-2">
@@ -204,7 +204,7 @@ export function RechargeModal({ packages, balance, reason, onClose }: Props) {
 
           <button
             onClick={onClose}
-            className="mt-3 w-full text-center text-[11px] uppercase tracking-wider text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+            className="mt-3 w-full text-center text-[11px] uppercase tracking-wider text-zinc-500 hover:text-zinc-600"
           >
             Cancelar
           </button>

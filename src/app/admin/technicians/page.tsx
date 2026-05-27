@@ -20,15 +20,13 @@ export default async function AdminTechniciansPage() {
   });
 
   return (
-    <div className="px-6 py-8">
+    <div className="px-6 py-8 lg:px-10">
       <div className="mb-6">
-        <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tight">
-          <Users className="h-7 w-7 text-brand-400" />
+        <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tight text-zinc-900">
+          <Users className="h-7 w-7 text-indigo-600" />
           Técnicos
         </h1>
-        <p className="mt-1 text-sm text-zinc-400">
-          Registro y verificación de profesionales.
-        </p>
+        <p className="mt-1 text-sm text-zinc-500">Registro y verificación de profesionales.</p>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -43,38 +41,28 @@ export default async function AdminTechniciansPage() {
                     {t.verified ? <BadgeCheck className="h-5 w-5" /> : <Wrench className="h-5 w-5" />}
                   </BentoIcon>
                   <div>
-                    <div className="font-semibold text-zinc-100">{t.displayName}</div>
+                    <div className="font-semibold text-zinc-900">{t.displayName}</div>
                     <div className="text-xs text-zinc-500">{t.user.name ?? "Sin nombre legal"}</div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs uppercase tracking-wider text-zinc-500">Saldo</div>
-                  <div className="text-lg font-bold tabular-nums text-money-400">{formatMXN(t.balance)}</div>
+                  <div className="text-lg font-bold tabular-nums text-emerald-700">{formatMXN(t.balance)}</div>
                 </div>
               </div>
 
-              <div className="mb-3 space-y-1 text-xs text-zinc-400">
-                <div className="flex items-center gap-1.5">
-                  <Mail className="h-3 w-3" />
-                  {t.user.email}
-                </div>
-                {t.user.phone && (
-                  <div className="flex items-center gap-1.5">
-                    <Phone className="h-3 w-3" />
-                    {t.user.phone}
-                  </div>
-                )}
+              <div className="mb-3 space-y-1 text-xs text-zinc-500">
+                <div className="flex items-center gap-1.5"><Mail className="h-3 w-3" />{t.user.email}</div>
+                {t.user.phone && <div className="flex items-center gap-1.5"><Phone className="h-3 w-3" />{t.user.phone}</div>}
               </div>
 
-              <div className="flex flex-wrap gap-2 border-t border-zinc-800/60 pt-3">
+              <div className="flex flex-wrap gap-2 border-t border-slate-200/80 pt-3">
                 <Pill icon={<Wallet className="h-3 w-3" />} label={`${t._count.purchases} compras`} />
                 <Pill icon={<MapPin className="h-3 w-3" />} label={`${t.coverages.length} ciudades`} />
                 <Pill icon={<Wrench className="h-3 w-3" />} label={`${t.services.length} servicios`} />
-                {t.verified ? (
-                  <Pill icon={<BadgeCheck className="h-3 w-3" />} label="Verificado" tone="emerald" />
-                ) : (
-                  <Pill icon={<BadgeCheck className="h-3 w-3" />} label="Pendiente" tone="amber" />
-                )}
+                {t.verified
+                  ? <Pill icon={<BadgeCheck className="h-3 w-3" />} label="Verificado" tone="emerald" />
+                  : <Pill icon={<BadgeCheck className="h-3 w-3" />} label="Pendiente" tone="amber" />}
               </div>
             </BentoCard>
           ))
@@ -86,9 +74,9 @@ export default async function AdminTechniciansPage() {
 
 function Pill({ icon, label, tone = "zinc" }: { icon: React.ReactNode; label: string; tone?: "zinc" | "emerald" | "amber" }) {
   const cls = {
-    zinc: "border-zinc-800 bg-zinc-900/60 text-zinc-400",
-    emerald: "border-money-500/30 bg-money-500/10 text-money-400",
-    amber: "border-amber-500/30 bg-amber-500/10 text-amber-400",
+    zinc: "border-slate-200 bg-white text-zinc-600",
+    emerald: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    amber: "border-amber-200 bg-amber-50 text-amber-700",
   }[tone];
   return (
     <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] ${cls}`}>
