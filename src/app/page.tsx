@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   Wrench,
   WashingMachine,
@@ -19,6 +20,23 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   "linea-blanca": WashingMachine,
   "plomeria": Droplets,
   "electricidad": Zap,
+};
+
+// Imagen ilustrativa generada por IA para cada categoría (en /public/images/)
+// y alt-text optimizado para SEO local.
+const categoryImage: Record<string, { src: string; alt: string }> = {
+  "linea-blanca": {
+    src: "/images/cat-linea-blanca.png",
+    alt: "Reparación de línea blanca: lavadora y refrigerador modernos a domicilio",
+  },
+  plomeria: {
+    src: "/images/cat-plomeria.png",
+    alt: "Servicios de plomería: fugas, tuberías e instalaciones hidráulicas",
+  },
+  electricidad: {
+    src: "/images/cat-electricidad.png",
+    alt: "Servicios eléctricos: instalaciones, fallas y mantenimiento",
+  },
 };
 
 export default async function HomePage() {
@@ -44,25 +62,25 @@ export default async function HomePage() {
         className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.18),transparent_55%)]"
       />
 
-      {/* Header — glass + padding generoso */}
-      <header className="sticky top-0 z-20 border-b border-slate-200/60 bg-white/70 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-8 py-4">
+      {/* Header — full-width edge-to-edge, glass effect */}
+      <header className="sticky top-0 z-20 w-full border-b border-slate-200/60 bg-white/70 backdrop-blur-md">
+        <div className="flex w-full items-center justify-between px-6 py-4 sm:px-10 lg:px-16">
           <Link href="/" className="flex items-center gap-2.5 font-semibold text-zinc-900">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-lg shadow-indigo-500/30">
-              <Wrench className="h-4 w-4" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-lg shadow-indigo-500/30">
+              <Wrench className="h-5 w-5" />
             </div>
-            <span className="tracking-tight">FixHub</span>
+            <span className="text-lg tracking-tight">FixHub</span>
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Link
               href="/panel"
-              className="rounded-full border border-slate-200 px-4 py-1.5 text-sm font-medium text-zinc-700 transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
+              className="rounded-full border border-slate-200 px-5 py-2 text-sm font-medium text-zinc-700 transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
             >
               Soy Técnico
             </Link>
             <Link
               href="#servicios"
-              className="group relative overflow-hidden rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 px-5 py-1.5 text-sm font-semibold text-white shadow-md shadow-indigo-500/30 ring-1 ring-white/10 transition-all hover:shadow-lg hover:shadow-indigo-500/50"
+              className="group relative overflow-hidden rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 px-6 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-500/30 ring-1 ring-white/10 transition-all hover:shadow-lg hover:shadow-indigo-500/50"
             >
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
               <span className="relative">Solicitar</span>
@@ -71,49 +89,67 @@ export default async function HomePage() {
         </div>
       </header>
 
-      {/* Hero — contenedor con glassmorphism encima del patrón de puntos */}
+      {/* Hero — split layout (texto + imagen) con glassmorphism */}
       <section className="relative">
-        <div className="mx-auto max-w-6xl px-6 pt-20 pb-24">
-          <div className="rounded-[2rem] border border-white/40 bg-white/70 px-6 py-16 text-center shadow-[0_8px_60px_-15px_rgba(99,102,241,0.18)] backdrop-blur-md sm:px-12 md:py-20">
-            <div className="mx-auto mb-5 inline-flex items-center gap-1.5 rounded-full border border-emerald-300/60 bg-emerald-50/80 px-3.5 py-1 text-xs font-medium text-emerald-700 backdrop-blur">
-              <Sparkles className="h-3 w-3" />
-              Técnicos verificados · Servicio el mismo día
-            </div>
+        <div className="mx-auto max-w-7xl px-6 pt-16 pb-24 sm:px-10 lg:px-16">
+          <div className="overflow-hidden rounded-[2rem] border border-white/40 bg-white/70 shadow-[0_8px_60px_-15px_rgba(99,102,241,0.2)] backdrop-blur-md">
+            <div className="grid items-center gap-8 lg:grid-cols-5">
+              {/* Texto — 3 columnas */}
+              <div className="px-6 py-12 sm:px-12 lg:col-span-3 lg:py-16">
+                <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-emerald-300/60 bg-emerald-50/80 px-3.5 py-1 text-xs font-medium text-emerald-700 backdrop-blur">
+                  <Sparkles className="h-3 w-3" />
+                  Técnicos verificados · Servicio el mismo día
+                </div>
 
-            <h1 className="mb-5 text-5xl font-bold leading-[1.02] tracking-tight text-zinc-900 md:text-6xl">
-              Reparaciones a domicilio,{" "}
-              <span className="bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
-                en minutos
-              </span>
-            </h1>
+                <h1 className="mb-5 text-5xl font-bold leading-[1.02] tracking-tight text-zinc-900 md:text-6xl">
+                  Reparaciones a domicilio,{" "}
+                  <span className="bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
+                    en minutos
+                  </span>
+                </h1>
 
-            <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-zinc-600">
-              Electrodomésticos, plomería, electricidad y más. El mismo día, en tu zona,
-              con garantía.
-            </p>
+                <p className="mb-10 max-w-xl text-lg leading-relaxed text-zinc-600">
+                  Electrodomésticos, plomería, electricidad y más. El mismo día, en tu zona,
+                  con garantía.
+                </p>
 
-            <HeroCTA />
+                <HeroCTA />
 
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-zinc-500">
-              <span className="flex items-center gap-1.5">
-                <Clock className="h-4 w-4 text-emerald-600" />
-                Respuesta en &lt;5 min
-              </span>
-              <span className="flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                Garantía 30 días
-              </span>
-              <span className="flex items-center gap-1.5">
-                <MapPin className="h-4 w-4 text-emerald-600" />
-                {cities.length}+ ciudades
-              </span>
+                <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-zinc-500">
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="h-4 w-4 text-emerald-600" />
+                    Respuesta en &lt;5 min
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                    Garantía 30 días
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="h-4 w-4 text-emerald-600" />
+                    {cities.length}+ ciudades
+                  </span>
+                </div>
+              </div>
+
+              {/* Imagen — 2 columnas, con glow indigo detrás */}
+              <div className="relative h-72 w-full overflow-hidden lg:col-span-2 lg:h-full lg:min-h-[480px]">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-transparent to-violet-500/10" />
+                <Image
+                  src="/images/hero.png"
+                  alt="Técnico profesional FixHub atendiendo a un cliente en casa moderna en México"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-cover"
+                />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Servicios por categoría */}
-      <section id="servicios" className="mx-auto max-w-6xl px-6 py-16">
+      {/* Servicios por categoría — cards con imagen IA + lista de servicios */}
+      <section id="servicios" className="mx-auto max-w-7xl px-6 py-16 sm:px-10 lg:px-16">
         <div className="mb-10">
           <h2 className="text-3xl font-bold tracking-tight text-zinc-900">Nuestros servicios</h2>
           <p className="mt-1 text-zinc-500">Selecciona la categoría que necesitas</p>
@@ -121,26 +157,38 @@ export default async function HomePage() {
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {categories.map((cat) => {
             const Icon = categoryIcons[cat.slug] ?? Wrench;
+            const img = categoryImage[cat.slug];
             return (
               <div
                 key={cat.id}
-                className="group relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-bento transition-all hover:border-brand-300 hover:shadow-glow-indigo"
+                className="group relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-bento transition-all hover:border-indigo-300 hover:shadow-[0_12px_40px_-10px_rgba(99,102,241,0.35)]"
               >
-                <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-brand-500/5 to-transparent" />
-                <div className="relative">
-                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-600 ring-1 ring-brand-500/20">
-                    <Icon className="h-6 w-6" />
+                {/* Imagen IA en el top */}
+                {img && (
+                  <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-indigo-50 to-violet-50">
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                )}
+                <div className="p-6">
+                  <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 ring-1 ring-indigo-500/20">
+                    <Icon className="h-5 w-5" />
                   </div>
                   <h3 className="mb-1 text-xl font-bold text-zinc-900">{cat.name}</h3>
                   {cat.description && (
                     <p className="mb-4 text-sm text-zinc-500">{cat.description}</p>
                   )}
-                  <ul className="space-y-2">
+                  <ul className="space-y-1">
                     {cat.services.map((sv) => (
                       <li key={sv.id}>
                         <Link
                           href={`/${sv.slug}`}
-                          className="group/link flex items-center justify-between rounded-xl px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-brand-50 hover:text-brand-700"
+                          className="group/link flex items-center justify-between rounded-xl px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700"
                         >
                           <span>{sv.name}</span>
                           <ArrowRight className="h-3.5 w-3.5 opacity-0 transition-all group-hover/link:translate-x-0.5 group-hover/link:opacity-100" />
@@ -156,7 +204,7 @@ export default async function HomePage() {
       </section>
 
       {/* Ciudades */}
-      <section className="mx-auto max-w-6xl px-6 py-12">
+      <section className="mx-auto max-w-7xl px-6 py-12 sm:px-10 lg:px-16">
         <h2 className="mb-4 text-2xl font-bold tracking-tight text-zinc-900">Cobertura</h2>
         <div className="flex flex-wrap gap-2">
           {cities.map((c) => (

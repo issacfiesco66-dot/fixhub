@@ -13,11 +13,25 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { ShieldCheck, Clock, BadgeCheck, MapPin, Wrench } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { LeadForm } from "@/components/LeadForm";
 import { buildLocalBusinessJsonLd } from "@/lib/seo";
 import { findServiceContent } from "@/lib/service-content-store";
+
+// Resuelve la imagen del servicio si ya fue generada en public/images/
+async function getServiceImage(serviceSlug: string) {
+  const candidate = `/images/svc-${serviceSlug}.png`;
+  try {
+    await fs.access(path.join(process.cwd(), "public", `images/svc-${serviceSlug}.png`));
+    return candidate;
+  } catch {
+    return null;
+  }
+}
 
 type Params = { slug: string };
 
@@ -194,6 +208,9 @@ export default async function ServiceLandingPage({ params }: { params: Promise<P
       })
     : null;
 
+  // Imagen específica del servicio (si ya fue generada via images:generate)
+  const serviceImageSrc = await getServiceImage(service.slug);
+
   const defaultH1Parts = [service.name];
   if (brand) defaultH1Parts.push(brand.name);
   if (city) defaultH1Parts.push(`en ${city.name}`);
@@ -214,13 +231,28 @@ export default async function ServiceLandingPage({ params }: { params: Promise<P
         })
       : null;
 
+  // ImageObject schema — Google AI Overviews + Search prefieren páginas con imagen estructurada
+  const imageJsonLd =
+    serviceImageSrc && jsonLd
+      ? {
+          ...jsonLd,
+          image: {
+            "@type": "ImageObject",
+            url: `${baseUrl}${serviceImageSrc}`,
+            caption: `${service.name}${brand ? ` ${brand.name}` : ""}${city ? ` en ${city.name}` : ""}`,
+          },
+        }
+      : jsonLd;
+
   return (
     <main className="min-h-screen bg-slate-50/60">
-      {/* JSON-LD LocalBusiness para Geo-SEO */}
-      {jsonLd && (
+      {/* JSON-LD LocalBusiness + ImageObject para Geo-SEO */}
+      {imageJsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(imageJsonLd).replace(/</g, "\\u003c"),
+          }}
         />
       )}
       <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/80 backdrop-blur-md">
@@ -251,6 +283,19 @@ export default async function ServiceLandingPage({ params }: { params: Promise<P
             <h1 className="mb-4 text-4xl font-bold leading-[1.1] tracking-tight text-zinc-900 md:text-5xl">
               {h1Text}
             </h1>
+
+            {/* Imagen del servicio — Geo-SEO friendly con alt local */}
+            {serviceImageSrc && (
+              <div className="relative mb-6 aspect-[4/3] w-full max-w-md overflow-hidden rounded-2xl border border-slate-200/80 shadow-md md:hidden">
+                <Image
+                  src={serviceImageSrc}
+                  alt={`${service.name}${brand ? ` ${brand.name}` : ""}${city ? ` en ${city.name}` : ""} — servicio profesional a domicilio`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 0px"
+                  className="object-cover"
+                />
+              </div>
+            )}
 
             {bodyText ? (
               // Texto único IA-generado del ServiceContent
@@ -300,6 +345,18 @@ export default async function ServiceLandingPage({ params }: { params: Promise<P
           </div>
 
           <div className="md:col-span-2">
+            {/* Imagen del servicio — solo desktop, sobre el form */}
+            {serviceImageSrc && (
+              <div className="relative mb-5 hidden aspect-[4/3] w-full overflow-hidden rounded-3xl border border-slate-200/80 shadow-md md:block">
+                <Image
+                  src={serviceImageSrc}
+                  alt={`${service.name}${brand ? ` ${brand.name}` : ""}${city ? ` en ${city.name}` : ""} — servicio profesional a domicilio`}
+                  fill
+                  sizes="(max-width: 1024px) 0px, 33vw"
+                  className="object-cover"
+                />
+              </div>
+            )}
             <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-bento">
               <h2 className="mb-1 text-lg font-bold tracking-tight text-zinc-900">
                 Solicita tu técnico

@@ -14,6 +14,8 @@
     "seo:generate": "tsx scripts/generate-seo-content.ts",
     "seo:generate:force": "tsx scripts/generate-seo-content.ts --force",
     "create-admin": "tsx scripts/create-admin.ts",
+    "images:generate": "tsx --env-file=.env scripts/generate-images.ts",
+    "images:generate:force": "tsx --env-file=.env scripts/generate-images.ts --force",
     "postinstall": "prisma generate"
   },
   "dependencies": {
