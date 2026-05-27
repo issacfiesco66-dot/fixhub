@@ -6,14 +6,16 @@ import { getCurrentAdmin } from "@/lib/auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const createSchema = z.object({
-  name: z.string().min(2).max(120),
-  phone: z.string().min(8).max(20),
-  email: z.string().email().optional().or(z.literal("")),
-  city: z.string().min(1).max(80),
-  source: z.string().min(1).max(80),
-  notes: z.string().max(1000).optional(),
-});
+const createSchema = z
+  .object({
+    name: z.string().min(2).max(120),
+    phone: z.string().min(8).max(20),
+    email: z.string().email().optional().or(z.literal("")),
+    city: z.string().min(1).max(80),
+    source: z.string().min(1).max(80),
+    notes: z.string().max(1000).optional(),
+  })
+  .strict();
 
 // GET /api/admin/prospects?status=NEW&search=
 export async function GET(req: NextRequest) {

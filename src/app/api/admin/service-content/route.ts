@@ -7,17 +7,19 @@ import { upsertServiceContent } from "@/lib/service-content-store";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const upsertSchema = z.object({
-  serviceId: z.string().min(1),
-  brandId: z.string().optional().nullable(),
-  cityId: z.string().min(1),
-  h1: z.string().min(5).max(160),
-  metaTitle: z.string().max(160).optional().nullable(),
-  metaDescription: z.string().max(300).optional().nullable(),
-  body: z.string().min(50),
-  source: z.enum(["MANUAL", "AI_GPT", "AI_CLAUDE", "TEMPLATE"]).default("MANUAL"),
-  reviewed: z.boolean().optional(),
-});
+const upsertSchema = z
+  .object({
+    serviceId: z.string().min(1),
+    brandId: z.string().optional().nullable(),
+    cityId: z.string().min(1),
+    h1: z.string().min(5).max(160),
+    metaTitle: z.string().max(160).optional().nullable(),
+    metaDescription: z.string().max(300).optional().nullable(),
+    body: z.string().min(50),
+    source: z.enum(["MANUAL", "AI_GPT", "AI_CLAUDE", "TEMPLATE"]).default("MANUAL"),
+    reviewed: z.boolean().optional(),
+  })
+  .strict();
 
 // GET — admin lista todos los contenidos
 export async function GET() {

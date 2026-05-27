@@ -9,12 +9,14 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const schema = z.object({
-  serviceId: z.string().min(1),
-  brandId: z.string().nullable().optional(),
-  cityId: z.string().min(1),
-  force: z.boolean().optional(),
-});
+const schema = z
+  .object({
+    serviceId: z.string().min(1),
+    brandId: z.string().nullable().optional(),
+    cityId: z.string().min(1),
+    force: z.boolean().optional(),
+  })
+  .strict();
 
 // POST /api/admin/seo/generate
 // Body: { serviceId, brandId?, cityId, force? }

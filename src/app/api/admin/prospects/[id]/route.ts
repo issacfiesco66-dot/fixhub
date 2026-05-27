@@ -6,11 +6,13 @@ import { getCurrentAdmin } from "@/lib/auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const updateSchema = z.object({
-  status: z.enum(["NEW", "CONTACTED", "CONVERTED", "DISCARDED"]).optional(),
-  notes: z.string().max(1000).optional(),
-  convertedLeadId: z.string().optional(),
-});
+const updateSchema = z
+  .object({
+    status: z.enum(["NEW", "CONTACTED", "CONVERTED", "DISCARDED"]).optional(),
+    notes: z.string().max(1000).optional(),
+    convertedLeadId: z.string().cuid().optional(),
+  })
+  .strict();
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await getCurrentAdmin();
