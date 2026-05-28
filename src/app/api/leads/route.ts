@@ -4,6 +4,7 @@ import { createLeadSchema } from "@/lib/validators";
 import { getCurrentTechnician } from "@/lib/auth";
 import { rateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 import { sendAdminLeadNotification, sendClientTrackingEmail } from "@/lib/email";
+import { sendClientTrackingWhatsApp } from "@/lib/whatsapp";
 import { getPublicBaseUrl } from "@/lib/url";
 
 export const runtime = "nodejs";
@@ -107,6 +108,15 @@ export async function POST(req: NextRequest) {
       console.error("[leads] email seguimiento falló:", e instanceof Error ? e.message : e);
     }
   }
+
+  // WhatsApp al cliente con su link de seguimiento (best-effort; no-op si
+  // WhatsApp no está configurado). El teléfono siempre viene en el lead.
+  await sendClientTrackingWhatsApp({
+    to: data.clientPhone,
+    clientName: data.clientName,
+    serviceName: service.name,
+    trackUrl,
+  });
 
   return NextResponse.json(
     {

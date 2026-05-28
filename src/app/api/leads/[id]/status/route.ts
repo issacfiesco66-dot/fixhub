@@ -10,6 +10,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentTechnician } from "@/lib/auth";
 import { getPublicBaseUrl } from "@/lib/url";
 import { sendClientOnTheWayEmail } from "@/lib/email";
+import { sendClientOnTheWayWhatsApp } from "@/lib/whatsapp";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -48,18 +49,31 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   await prisma.leadPurchase.update({ where: { id: purchase.id }, data });
 
   // Aviso al cliente cuando el técnico sale en camino (best-effort).
-  if (parsed.data.status === "ON_THE_WAY" && purchase.lead.clientEmail) {
-    try {
-      await sendClientOnTheWayEmail({
-        to: purchase.lead.clientEmail,
-        clientName: purchase.lead.clientName,
-        technicianName: tech.displayName,
-        serviceName: purchase.lead.service.name,
-        trackUrl: `${getPublicBaseUrl()}/solicitud/${purchase.lead.publicToken}`,
-      });
-    } catch (e) {
-      console.error("[status] email 'en camino' falló:", e instanceof Error ? e.message : e);
+  if (parsed.data.status === "ON_THE_WAY") {
+    const trackUrl = `${getPublicBaseUrl()}/solicitud/${purchase.lead.publicToken}`;
+
+    if (purchase.lead.clientEmail) {
+      try {
+        await sendClientOnTheWayEmail({
+          to: purchase.lead.clientEmail,
+          clientName: purchase.lead.clientName,
+          technicianName: tech.displayName,
+          serviceName: purchase.lead.service.name,
+          trackUrl,
+        });
+      } catch (e) {
+        console.error("[status] email 'en camino' falló:", e instanceof Error ? e.message : e);
+      }
     }
+
+    // WhatsApp "en camino" (no-op si WhatsApp no está configurado).
+    await sendClientOnTheWayWhatsApp({
+      to: purchase.lead.clientPhone,
+      clientName: purchase.lead.clientName,
+      technicianName: tech.displayName,
+      serviceName: purchase.lead.service.name,
+      trackUrl,
+    });
   }
 
   return NextResponse.json({ ok: true, jobStatus: parsed.data.status });
