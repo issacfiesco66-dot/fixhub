@@ -84,6 +84,12 @@ export default function AdminLoginPage() {
             </div>
           )}
 
+          <div className="text-right">
+            <a href="/olvide-pass" className="text-xs font-medium text-indigo-600 hover:text-indigo-700">
+              ¿Olvidaste tu contraseña?
+            </a>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
