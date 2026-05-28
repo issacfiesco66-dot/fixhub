@@ -23,7 +23,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:px-16">
+    <section id="como-funciona" className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:px-16">
       <div className="mb-12 text-center">
         <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
           ¿Cómo funciona?

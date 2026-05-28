@@ -83,22 +83,32 @@ export default async function HomePage() {
         className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[800px] bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.12),transparent_60%)]"
       />
 
-      {/* Header — full-width edge-to-edge, sólido en mobile + glass en desktop */}
-      <header className="sticky top-0 z-20 w-full border-b border-slate-200/70 bg-white md:bg-white/80 md:backdrop-blur-md">
-        <div className="flex w-full items-center justify-between px-4 py-3 sm:px-10 sm:py-4 lg:px-16">
-          <Link href="/" className="flex items-center gap-2.5 font-semibold text-zinc-900">
+      {/* Header — full-width, 3 zonas: logo · navegación · CTAs (sin huecos muertos) */}
+      <header className="sticky top-0 z-20 w-full border-b border-slate-200/70 bg-white/90 backdrop-blur-md">
+        <div className="flex w-full items-center justify-between gap-6 px-4 py-3.5 sm:px-10 lg:px-16">
+          {/* Logo */}
+          <Link href="/" className="flex shrink-0 items-center gap-2.5 font-semibold text-zinc-900">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-lg shadow-indigo-500/30">
               <Wrench className="h-5 w-5" />
             </div>
             <span className="text-lg tracking-tight">FixHub</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/para-tecnicos"
-              className="hidden rounded-full px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-indigo-700 sm:inline-block"
-            >
-              Únete como técnico
+
+          {/* Navegación central — llena el header en desktop */}
+          <nav className="hidden items-center gap-8 lg:flex">
+            <Link href="#servicios" className="text-sm font-medium text-zinc-600 transition-colors hover:text-indigo-700">
+              Servicios
             </Link>
+            <Link href="#como-funciona" className="text-sm font-medium text-zinc-600 transition-colors hover:text-indigo-700">
+              Cómo funciona
+            </Link>
+            <Link href="/para-tecnicos" className="text-sm font-medium text-zinc-600 transition-colors hover:text-indigo-700">
+              Para técnicos
+            </Link>
+          </nav>
+
+          {/* CTAs */}
+          <div className="flex shrink-0 items-center gap-2">
             <Link
               href="/panel/login"
               className="rounded-full border border-slate-200 px-5 py-2 text-sm font-medium text-zinc-700 transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
