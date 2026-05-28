@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createLeadSchema } from "@/lib/validators";
 import { getCurrentTechnician } from "@/lib/auth";
+import { rateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,8 +10,12 @@ export const dynamic = "force-dynamic";
 const LEAD_TTL_HOURS = 24;
 
 // POST /api/leads — cliente final crea una petición.
-// Dispara la alerta a TODOS los técnicos en (ciudad × servicio).
+// Rate limit: 3 leads por minuto por IP (anti-spam público — H-1 del audit).
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rl = rateLimit(`leads:${ip}`, 3, 60_000);
+  if (!rl.allowed) return rateLimitResponse(rl);
+
   let body: unknown;
   try {
     body = await req.json();

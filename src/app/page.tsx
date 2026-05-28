@@ -14,6 +14,10 @@ import {
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { HeroCTA } from "@/components/HeroCTA";
+import { HowItWorks } from "@/components/HowItWorks";
+import { TrustBar } from "@/components/TrustBar";
+import { FAQ } from "@/components/FAQ";
+import { Footer } from "@/components/Footer";
 
 // Render on-demand. Antes era revalidate=3600 (ISR), pero eso intenta
 // pre-renderizar en build y necesita DATABASE_URL desde el primer deploy.
@@ -169,6 +173,12 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Trust bar — señales rápidas de confianza */}
+      <TrustBar />
+
+      {/* Cómo funciona — 3 pasos */}
+      <HowItWorks />
+
       {/* Servicios por categoría — cards con imagen IA + lista de servicios */}
       <section id="servicios" className="mx-auto max-w-7xl px-6 py-16 sm:px-10 lg:px-16">
         <div className="mb-10">
@@ -224,14 +234,22 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <FAQ />
+
       {/* Ciudades */}
       <section className="mx-auto max-w-7xl px-6 py-12 sm:px-10 lg:px-16">
-        <h2 className="mb-4 text-2xl font-bold tracking-tight text-zinc-900">Cobertura</h2>
-        <div className="flex flex-wrap gap-2">
+        <div className="mb-4 text-center">
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900">
+            Cobertura en {cities.length} ciudades
+          </h2>
+          <p className="mt-1 text-sm text-zinc-500">Y creciendo cada semana</p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-2">
           {cities.map((c) => (
             <span
               key={c.id}
-              className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm text-zinc-700"
+              className="rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-sm text-zinc-700 backdrop-blur"
             >
               {c.name}
             </span>
@@ -239,9 +257,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <footer className="mt-12 border-t border-slate-200/70 bg-white/60 py-8 text-center text-sm text-zinc-500">
-        © {new Date().getFullYear()} FixHub. Hecho en México.
-      </footer>
+      <Footer />
     </main>
   );
 }

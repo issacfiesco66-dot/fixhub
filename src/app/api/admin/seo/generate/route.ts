@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentAdmin } from "@/lib/auth";
 import { generateServiceContent } from "@/lib/ai-content";
 import { findServiceContent, upsertServiceContent } from "@/lib/service-content-store";
+import { rateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,6 +30,11 @@ export async function POST(req: NextRequest) {
   try {
     const admin = await getCurrentAdmin();
     if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    // Rate limit: 30 generaciones por minuto por admin — protege gasto OpenAI
+    // si la sesión admin es comprometida y se usa para spamear (H-4 del audit).
+    const rl = rateLimit(`seo-gen:${admin.id}:${getClientIp(req)}`, 30, 60_000);
+    if (!rl.allowed) return rateLimitResponse(rl);
 
     const body = await req.json().catch(() => null);
     const parsed = schema.safeParse(body);
