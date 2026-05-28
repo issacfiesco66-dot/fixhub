@@ -21,6 +21,7 @@ import { ContactRevealModal } from "./ContactRevealModal";
 import { RechargeModal } from "./RechargeModal";
 import { LeadCard } from "./LeadCard";
 import { DiagnosisModal } from "./DiagnosisModal";
+import { AssistModal } from "./AssistModal";
 import type { RepairDiagnosis } from "@/lib/ai-diagnosis";
 
 type Lead = {
@@ -109,6 +110,7 @@ export function TechnicianDashboard({
   const [diagTarget, setDiagTarget] = useState<Purchase | null>(null);
   const [diagLoading, setDiagLoading] = useState(false);
   const [diagError, setDiagError] = useState<string | null>(null);
+  const [showAssist, setShowAssist] = useState(false);
 
   const playPing = () => {
     try {
@@ -367,16 +369,25 @@ export function TechnicianDashboard({
               .
             </p>
           </div>
-          {lowBalance && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 rounded-xl border border-red-300 bg-red-50 px-3.5 py-2 text-sm text-red-700"
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setShowAssist(true)}
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 transition-all hover:shadow-xl hover:shadow-indigo-500/40"
             >
-              <Bell className="h-4 w-4 animate-pulse" />
-              Saldo bajo — podrías perder leads
-            </motion.div>
-          )}
+              <Sparkles className="h-4 w-4" />
+              Asistente IA
+            </button>
+            {lowBalance && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 rounded-xl border border-red-300 bg-red-50 px-3.5 py-2 text-sm text-red-700"
+              >
+                <Bell className="h-4 w-4 animate-pulse" />
+                Saldo bajo — podrías perder leads
+              </motion.div>
+            )}
+          </div>
         </div>
 
         {/* ── BENTO GRID ───────────────────────────────────── */}
@@ -571,6 +582,7 @@ export function TechnicianDashboard({
             onClose={() => setDiagTarget(null)}
           />
         )}
+        {showAssist && <AssistModal onClose={() => setShowAssist(false)} />}
       </AnimatePresence>
     </div>
   );

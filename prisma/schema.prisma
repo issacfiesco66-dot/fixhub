@@ -182,10 +182,27 @@ model Technician {
   services      TechnicianService[]
   purchases     LeadPurchase[]
   transactions  BalanceTransaction[]
+  assistLogs    TechAssistLog[]
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
 
   @@index([active, verified])
+}
+
+// Registro de consultas al Asistente IA libre del panel del técnico.
+// Habilita historial + límite de uso (anti-abuso de costo de IA): se cuentan
+// los logs del técnico en las últimas 24h.
+model TechAssistLog {
+  id           String     @id @default(cuid())
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  workType     String                 // "reparacion" | "instalacion" | "mantenimiento"
+  equipment    String                 // equipo + marca/modelo (texto libre)
+  description  String     @db.Text     // lo que escribió el técnico
+  result       Json                   // respuesta estructurada de la IA
+  createdAt    DateTime   @default(now())
+
+  @@index([technicianId, createdAt])
 }
 
 model TechnicianCoverage {
