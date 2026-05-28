@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   try {
     // Rate limit: 5 intentos por 15 min por IP (anti brute-force del actual password)
     const ip = getClientIp(req);
-    const rl = rateLimit(`change-pwd:${ip}`, 5, 15 * 60_000);
+    const rl = await rateLimit(`change-pwd:${ip}`, 5, 15 * 60_000);
     if (!rl.allowed) return rateLimitResponse(rl);
 
     // Identificar al usuario actual — admin O tech

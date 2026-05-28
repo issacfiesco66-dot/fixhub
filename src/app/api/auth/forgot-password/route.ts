@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   try {
     // Rate limit: 3 solicitudes / 15min por IP (anti email-bombing)
     const ip = getClientIp(req);
-    const rl = rateLimit(`forgot:${ip}`, 3, 15 * 60_000);
+    const rl = await rateLimit(`forgot:${ip}`, 3, 15 * 60_000);
     if (!rl.allowed) return rateLimitResponse(rl);
 
     const body = await req.json().catch(() => null);

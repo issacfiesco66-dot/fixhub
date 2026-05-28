@@ -20,7 +20,7 @@ const schema = z
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   const ip = getClientIp(req);
-  const rl = rateLimit(`review:${ip}`, 10, 60_000);
+  const rl = await rateLimit(`review:${ip}`, 10, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl);
 
   const { token } = await params;

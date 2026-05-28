@@ -19,7 +19,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!tech) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
   // Generar con IA cuesta tokens → límite por técnico.
-  const rl = rateLimit(`diagnosis:${tech.id}`, 10, 60_000);
+  const rl = await rateLimit(`diagnosis:${tech.id}`, 10, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl);
 
   const { id: leadId } = await params;

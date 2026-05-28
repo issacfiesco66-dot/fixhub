@@ -14,7 +14,7 @@ const DUMMY_HASH = "$2a$12$929luAeSkZqEIqR5sEDB/O2mTHDxR/SVxNrHoiaZvl4zcEYG06m/W
 // Rate limit anti brute-force: 5 intentos por 15 min por IP (H-2 del audit).
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-  const rl = rateLimit(`tech-login:${ip}`, 5, 15 * 60_000);
+  const rl = await rateLimit(`tech-login:${ip}`, 5, 15 * 60_000);
   if (!rl.allowed) return rateLimitResponse(rl);
 
   const { email, password } = await req.json().catch(() => ({}));

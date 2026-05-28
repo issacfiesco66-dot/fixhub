@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   try {
     // Rate limit: 5 intentos / 15min por IP (anti brute-force del token)
     const ip = getClientIp(req);
-    const rl = rateLimit(`reset:${ip}`, 5, 15 * 60_000);
+    const rl = await rateLimit(`reset:${ip}`, 5, 15 * 60_000);
     if (!rl.allowed) return rateLimitResponse(rl);
 
     const body = await req.json().catch(() => null);

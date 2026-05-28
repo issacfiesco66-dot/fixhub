@@ -38,7 +38,7 @@ function hashIp(ip: string): string {
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
   // Autocomplete dispara varias requests → 30/min es generoso pero acotado.
-  const rl = rateLimit(`search:${ip}`, 30, 60_000);
+  const rl = await rateLimit(`search:${ip}`, 30, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl);
 
   const body = await req.json().catch(() => null);

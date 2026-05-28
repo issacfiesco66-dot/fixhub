@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   if (!tech) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
   // Anti-spam inmediato: 5 por minuto.
-  const rl = rateLimit(`assist:${tech.id}`, 5, 60_000);
+  const rl = await rateLimit(`assist:${tech.id}`, 5, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl);
 
   const body = await req.json().catch(() => null);

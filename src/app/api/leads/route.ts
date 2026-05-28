@@ -13,7 +13,7 @@ const LEAD_TTL_HOURS = 24;
 // Rate limit: 3 leads por minuto por IP (anti-spam público — H-1 del audit).
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-  const rl = rateLimit(`leads:${ip}`, 3, 60_000);
+  const rl = await rateLimit(`leads:${ip}`, 3, 60_000);
   if (!rl.allowed) return rateLimitResponse(rl);
 
   let body: unknown;

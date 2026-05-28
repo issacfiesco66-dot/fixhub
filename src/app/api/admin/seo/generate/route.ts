@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     // Rate limit: 30 generaciones por minuto por admin — protege gasto OpenAI
     // si la sesión admin es comprometida y se usa para spamear (H-4 del audit).
-    const rl = rateLimit(`seo-gen:${admin.id}:${getClientIp(req)}`, 30, 60_000);
+    const rl = await rateLimit(`seo-gen:${admin.id}:${getClientIp(req)}`, 30, 60_000);
     if (!rl.allowed) return rateLimitResponse(rl);
 
     const body = await req.json().catch(() => null);
