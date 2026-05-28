@@ -131,8 +131,9 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Error interno";
+    // Log interno completo, respuesta genérica al cliente (no filtrar detalles
+    // de Prisma/runtime en una ruta pública).
     console.error("[api/auth/technician-register]", e);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: "No se pudo crear la cuenta. Intenta de nuevo." }, { status: 500 });
   }
 }

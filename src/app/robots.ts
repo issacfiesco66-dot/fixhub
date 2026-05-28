@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
   const base = getPublicBaseUrl();
   return {
     rules: [
-      { userAgent: "*", allow: "/", disallow: ["/api/", "/panel/"] },
+      { userAgent: "*", allow: "/", disallow: ["/api/", "/panel/", "/admin/", "/calificar/"] },
     ],
     sitemap: `${base}/sitemap.xml`,
   };

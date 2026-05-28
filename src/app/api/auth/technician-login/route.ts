@@ -6,6 +6,10 @@ import { rateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
+// Hash bcrypt fijo (cost 12) para comparar cuando el usuario NO existe, y así
+// igualar el tiempo de respuesta — evita enumeración de cuentas por timing.
+const DUMMY_HASH = "$2a$12$929luAeSkZqEIqR5sEDB/O2mTHDxR/SVxNrHoiaZvl4zcEYG06m/W";
+
 // Login mínimo para MVP — reemplazar por NextAuth/Auth.js cuando integres flujo completo.
 // Rate limit anti brute-force: 5 intentos por 15 min por IP (H-2 del audit).
 export async function POST(req: NextRequest) {
@@ -22,12 +26,11 @@ export async function POST(req: NextRequest) {
     where: { email },
     include: { technician: true },
   });
-  if (!user || !user.passwordHash || user.role !== "TECHNICIAN" || !user.technician) {
-    return NextResponse.json({ error: "Credenciales inválidas" }, { status: 401 });
-  }
 
-  const ok = await bcrypt.compare(password, user.passwordHash);
-  if (!ok) {
+  // Siempre ejecutamos bcrypt.compare (hash dummy si no hay user) para no
+  // delatar por tiempo si el email existe.
+  const ok = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_HASH);
+  if (!user || !ok || user.role !== "TECHNICIAN" || !user.technician) {
     return NextResponse.json({ error: "Credenciales inválidas" }, { status: 401 });
   }
 

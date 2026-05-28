@@ -132,7 +132,8 @@ export const technicianUpdateSchema = z
     bio: z.string().max(1000).optional().or(z.literal("")),
     yearsExp: z.number().int().min(0).max(80).optional(),
     // Ajuste de saldo: delta a sumar/restar (positivo o negativo), con motivo.
-    balanceAdjustment: z.number().int().optional(),
+    // Acotado para evitar montos absurdos por error/abuso del admin.
+    balanceAdjustment: z.number().int().min(-1_000_000).max(1_000_000).optional(),
     balanceReason: z.string().max(200).optional(),
     cityIds: z.array(z.string()).optional(),
     serviceIds: z.array(z.string()).optional(),
