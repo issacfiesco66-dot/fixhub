@@ -35,7 +35,7 @@ _BOOT_TIME = time.time()
 SERVICE_TOKEN = os.getenv("SCRAPER_SERVICE_TOKEN", "")
 ALLOWED_ORIGINS = os.getenv(
     "CORS_ORIGINS",
-    "https://fixhub-sigma.vercel.app,http://localhost:3000,http://localhost:3100",
+    "https://fix-hub.company,https://www.fix-hub.company,http://localhost:3000,http://localhost:3100",
 ).split(",")
 
 app.add_middleware(

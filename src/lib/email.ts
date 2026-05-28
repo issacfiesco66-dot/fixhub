@@ -64,7 +64,7 @@ export async function sendAdminLeadNotification(args: {
   clientPhone: string;
 }) {
   if (!ADMIN_EMAIL) return; // sin destinatario configurado, no-op
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fixhub-sigma.vercel.app";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fix-hub.company";
   const urgencyLabel = args.urgency === "EMERGENCY" ? "🚨 Emergencia" : args.urgency === "URGENT" ? "⚡ Urgente" : "Normal";
   const html = adminShell(
     "Nueva solicitud de servicio",
@@ -96,7 +96,7 @@ export async function sendAdminTechnicianNotification(args: {
   services: string[];
 }) {
   if (!ADMIN_EMAIL) return;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fixhub-sigma.vercel.app";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fix-hub.company";
   const html = adminShell(
     "Nuevo técnico registrado (pendiente de verificar)",
     [

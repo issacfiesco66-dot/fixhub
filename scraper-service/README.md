@@ -18,9 +18,9 @@ sin Firebase/Firestore; auth por token y envío vía HTTP a FixHub.
 3. **Settings → Networking → Generate Domain** (puerto **8000**) → te da la URL pública `*.up.railway.app`.
 4. **Variables** (en Railway):
    - `SCRAPER_SERVICE_TOKEN` — token compartido con Vercel (≥16 chars)
-   - `FIXHUB_INGEST_URL` = `https://fixhub-sigma.vercel.app/api/prospectos/ingest`
+   - `FIXHUB_INGEST_URL` = `https://fix-hub.company/api/prospectos/ingest`
    - `INGEST_WEBHOOK_SECRET` — el mismo que en Vercel (≥32 chars)
-   - `CORS_ORIGINS` = `https://fixhub-sigma.vercel.app`
+   - `CORS_ORIGINS` = `https://fix-hub.company`
 
 ## En Vercel (proyecto FixHub) — env vars
 - `SCRAPER_SERVICE_URL` = la URL pública de Railway (sin `/` final)
