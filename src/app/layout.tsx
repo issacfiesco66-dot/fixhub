@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     siteName: "FixHub",
   },
   verification: {
-    google: "VjMDsUWqI2OIcHJ0ZtG8I5ShnauPUFvqMXhsXZobZyk",
+    google: "S2Bf4K8xefjmyZ4CuLxJilThBoMap0J8F61FPbyYXgo",
   },
 };
 
