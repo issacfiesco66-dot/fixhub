@@ -81,6 +81,7 @@ type Props = {
   initialLeads: Lead[];
   recentPurchases: Purchase[];
   packages: { id: string; name: string; amount: number; bonus: number; popular: boolean }[];
+  freeRemaining: number;
 };
 
 export function TechnicianDashboard({
@@ -88,10 +89,12 @@ export function TechnicianDashboard({
   initialLeads,
   recentPurchases,
   packages,
+  freeRemaining: initialFreeRemaining,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [balance, setBalance] = useState(technician.balance);
+  const [freeRemaining, setFreeRemaining] = useState(initialFreeRemaining);
   const [leads, setLeads] = useState<Lead[]>(initialLeads);
   const [activeAlert, setActiveAlert] = useState<AlertPayload | null>(null);
   const [revealedContact, setRevealedContact] = useState<{
@@ -227,6 +230,7 @@ export function TechnicianDashboard({
     }
 
     setBalance(data.newBalance);
+    if (typeof data.freeRemaining === "number") setFreeRemaining(data.freeRemaining);
     setActiveAlert(null);
     setLeads((prev) => prev.filter((l) => l.id !== leadId));
     setRevealedContact({
@@ -407,13 +411,23 @@ export function TechnicianDashboard({
             value={String(leads.length)}
             hint="en tu zona"
           />
-          <BentoStat
-            tone="amber"
-            icon={<Briefcase className="h-5 w-5" />}
-            label="Trabajos comprados"
-            value={String(purchases.length)}
-            hint="últimos 10"
-          />
+          {freeRemaining > 0 ? (
+            <BentoStat
+              tone="emerald"
+              icon={<Sparkles className="h-5 w-5" />}
+              label="Servicios gratis"
+              value={String(freeRemaining)}
+              hint="cortesía de bienvenida"
+            />
+          ) : (
+            <BentoStat
+              tone="amber"
+              icon={<Briefcase className="h-5 w-5" />}
+              label="Trabajos comprados"
+              value={String(purchases.length)}
+              hint="últimos 10"
+            />
+          )}
           <BentoStat
             tone={technician.verified ? "emerald" : "zinc"}
             icon={<ShieldCheck className="h-5 w-5" />}
@@ -462,7 +476,7 @@ export function TechnicianDashboard({
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <LeadCard lead={lead} onPurchase={() => handlePurchase(lead.id)} />
+                    <LeadCard lead={lead} isFree={freeRemaining > 0} onPurchase={() => handlePurchase(lead.id)} />
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -551,6 +565,7 @@ export function TechnicianDashboard({
           <LeadAlertModal
             key={activeAlert.leadId}
             alert={activeAlert}
+            isFree={freeRemaining > 0}
             onAccept={() => handlePurchase(activeAlert.leadId)}
             onClose={() => setActiveAlert(null)}
           />

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getCurrentTechnician } from "@/lib/auth";
+import { getFreeLeadsLimit } from "@/lib/config";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,6 +18,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   }
 
   const { id: leadId } = await params;
+  const freeLeadsLimit = await getFreeLeadsLimit();
 
   try {
     const result = await prisma.$transaction(async (tx) => {
@@ -60,42 +62,52 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
         throw new BizError("WRONG_SERVICE", "No ofreces este tipo de servicio");
       }
 
-      // 4. Verificar saldo
-      if (techRow.balance < lead.price) {
+      // Leads de cortesía: las primeras N compras del técnico son gratis
+      // (de por vida). N es configurable por el admin (AppConfig.freeLeadsLimit).
+      const previousPurchases = await tx.leadPurchase.count({
+        where: { technicianId: tech.id },
+      });
+      const isFree = previousPurchases < freeLeadsLimit;
+      const chargedPrice = isFree ? 0 : lead.price;
+
+      // 4. Verificar saldo — SOLO si no es un lead de cortesía
+      if (!isFree && techRow.balance < lead.price) {
         throw new BizError("INSUFFICIENT_FUNDS", "Saldo insuficiente", {
           balance: techRow.balance,
           required: lead.price,
         });
       }
 
-      // 3. Crear la compra (aquí se aplica el lock por @unique)
+      // 5. Crear la compra (aquí se aplica el lock por @unique)
       const purchase = await tx.leadPurchase.create({
         data: {
           leadId: lead.id,
           technicianId: tech.id,
-          pricePaid: lead.price,
+          pricePaid: chargedPrice,
         },
       });
 
-      // 4. Debitar saldo + actualizar status
+      // 6. Debitar saldo (decrement 0 si es cortesía = no-op) + actualizar status
       const updatedTech = await tx.technician.update({
         where: { id: tech.id },
-        data: { balance: { decrement: lead.price } },
+        data: { balance: { decrement: chargedPrice } },
       });
       await tx.lead.update({
         where: { id: lead.id },
         data: { status: "PURCHASED" },
       });
 
-      // 5. Registro contable
+      // 7. Registro contable (cortesía queda con amount 0, auditable)
       await tx.balanceTransaction.create({
         data: {
           technicianId: tech.id,
           type: "LEAD_PURCHASE",
           status: "COMPLETED",
-          amount: -lead.price,
+          amount: -chargedPrice,
           balanceAfter: updatedTech.balance,
-          description: `Compra de lead ${lead.service.name}${lead.brand ? ` - ${lead.brand.name}` : ""} en ${lead.city.name}`,
+          description: isFree
+            ? `Servicio de cortesía (${previousPurchases + 1}/${freeLeadsLimit}): ${lead.service.name}${lead.brand ? ` - ${lead.brand.name}` : ""} en ${lead.city.name}`
+            : `Compra de lead ${lead.service.name}${lead.brand ? ` - ${lead.brand.name}` : ""} en ${lead.city.name}`,
           leadPurchaseId: purchase.id,
         },
       });
@@ -103,6 +115,8 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       return {
         purchase,
         newBalance: updatedTech.balance,
+        wasFree: isFree,
+        freeRemaining: Math.max(0, freeLeadsLimit - (previousPurchases + 1)),
         contact: {
           clientName: lead.clientName,
           clientPhone: lead.clientPhone,

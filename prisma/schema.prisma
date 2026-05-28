@@ -475,6 +475,14 @@ model ServiceSearch {
   @@index([createdAt])
 }
 
+// Configuración global de la app (singleton — siempre id="singleton").
+// Evita hardcodear reglas de negocio que el admin debe poder ajustar.
+model AppConfig {
+  id             String   @id @default("singleton")
+  freeLeadsLimit Int      @default(3) // leads de cortesía por técnico (de por vida)
+  updatedAt      DateTime @updatedAt
+}
+
 // Paquetes de recarga configurables (en lugar de hardcodear $1k/$2k/$5k)
 model RechargePackage {
   id          String   @id @default(cuid())

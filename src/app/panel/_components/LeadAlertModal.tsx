@@ -20,6 +20,7 @@ type AlertPayload = {
 
 type Props = {
   alert: AlertPayload;
+  isFree?: boolean;
   onAccept: () => void;
   onClose: () => void;
 };
@@ -27,7 +28,7 @@ type Props = {
 const COUNTDOWN_SECONDS = 60;
 const URGENT_THRESHOLD = 15;
 
-export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
+export function LeadAlertModal({ alert, isFree = false, onAccept, onClose }: Props) {
   const [secondsLeft, setSecondsLeft] = useState(COUNTDOWN_SECONDS);
   const [purchasing, setPurchasing] = useState(false);
 
@@ -198,6 +199,11 @@ export function LeadAlertModal({ alert, onAccept, onClose }: Props) {
                 "Procesando..."
               ) : isExpired ? (
                 "Tiempo agotado"
+              ) : isFree ? (
+                <>
+                  <Zap className="h-4 w-4" />
+                  Atender GRATIS 🎁
+                </>
               ) : (
                 <>
                   <Zap className="h-4 w-4" />

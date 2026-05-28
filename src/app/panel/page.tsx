@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentTechnician } from "@/lib/auth";
+import { getFreeLeadsLimit } from "@/lib/config";
 import type { RepairDiagnosis } from "@/lib/ai-diagnosis";
 import { TechnicianDashboard } from "./_components/TechnicianDashboard";
 
@@ -10,7 +11,7 @@ export default async function PanelPage() {
   const tech = await getCurrentTechnician();
   if (!tech) redirect("/panel/login");
 
-  const [activeLeads, recentPurchases, packages] = await Promise.all([
+  const [activeLeads, recentPurchases, packages, purchaseCount, freeLeadsLimit] = await Promise.all([
     prisma.lead.findMany({
       where: {
         status: "PENDING",
@@ -48,10 +49,15 @@ export default async function PanelPage() {
       where: { active: true },
       orderBy: { order: "asc" },
     }),
+    prisma.leadPurchase.count({ where: { technicianId: tech.id } }),
+    getFreeLeadsLimit(),
   ]);
+
+  const freeRemaining = Math.max(0, freeLeadsLimit - purchaseCount);
 
   return (
     <TechnicianDashboard
+      freeRemaining={freeRemaining}
       technician={{
         id: tech.id,
         name: tech.displayName,

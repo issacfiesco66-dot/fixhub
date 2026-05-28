@@ -49,7 +49,15 @@ function timeAgo(iso: string) {
   return `Hace ${hrs}h`;
 }
 
-export function LeadCard({ lead, onPurchase }: { lead: Lead; onPurchase: () => void }) {
+export function LeadCard({
+  lead,
+  isFree = false,
+  onPurchase,
+}: {
+  lead: Lead;
+  isFree?: boolean;
+  onPurchase: () => void;
+}) {
   const [busy, setBusy] = useState(false);
   const u = urgencyMeta[lead.urgency];
   const UrgencyIcon = u.icon;
@@ -107,9 +115,18 @@ export function LeadCard({ lead, onPurchase }: { lead: Lead; onPurchase: () => v
         <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
         <span className="relative inline-flex items-center justify-center gap-1.5">
           <Zap className="h-3.5 w-3.5" />
-          {busy ? "Procesando..." : `Atender por ${formatMXN(lead.price)}`}
+          {busy
+            ? "Procesando..."
+            : isFree
+            ? "Atender GRATIS"
+            : `Atender por ${formatMXN(lead.price)}`}
         </span>
       </button>
+      {isFree && (
+        <p className="mt-2 text-center text-[11px] font-medium text-emerald-600">
+          🎁 Servicio de cortesía — sin costo
+        </p>
+      )}
     </BentoCard>
   );
 }

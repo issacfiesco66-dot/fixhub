@@ -1,15 +1,20 @@
 ﻿import { Package, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatMXN } from "@/lib/utils";
+import { getFreeLeadsLimit } from "@/lib/config";
 import { BentoCard, BentoIcon } from "@/components/ui/BentoCard";
 import { requireAdminOrRedirect } from "../_lib/auth-guard";
+import { FreeLeadsConfig } from "./_components/FreeLeadsConfig";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPackagesPage() {
   await requireAdminOrRedirect();
 
-  const packages = await prisma.rechargePackage.findMany({ orderBy: { order: "asc" } });
+  const [packages, freeLeadsLimit] = await Promise.all([
+    prisma.rechargePackage.findMany({ orderBy: { order: "asc" } }),
+    getFreeLeadsLimit(),
+  ]);
 
   return (
     <div className="px-6 py-8 lg:px-10">
@@ -20,6 +25,8 @@ export default async function AdminPackagesPage() {
         </h1>
         <p className="mt-1 text-sm text-zinc-500">Configuración de pricing para los técnicos.</p>
       </div>
+
+      <FreeLeadsConfig initial={freeLeadsLimit} />
 
       <div className="grid gap-4 md:grid-cols-3">
         {packages.map((p) => {
