@@ -18,6 +18,8 @@ import {
   X,
   Copy,
   MessageCircle,
+  Navigation,
+  Home,
 } from "lucide-react";
 import { formatMXN } from "@/lib/utils";
 import { BentoCard, BentoIcon } from "@/components/ui/BentoCard";
@@ -57,6 +59,7 @@ type Purchase = {
   failure: string;
   diagnosis: RepairDiagnosis | null;
   jobCompleted: boolean;
+  jobStatus: "ASSIGNED" | "ON_THE_WAY" | "ARRIVED" | "COMPLETED" | "CANCELLED";
 };
 
 type ReviewShare = {
@@ -128,6 +131,7 @@ export function TechnicianDashboard({
   const [diagError, setDiagError] = useState<string | null>(null);
   const [showAssist, setShowAssist] = useState(false);
   const [completing, setCompleting] = useState<string | null>(null);
+  const [advancing, setAdvancing] = useState<string | null>(null);
   const [reviewShare, setReviewShare] = useState<ReviewShare | null>(null);
 
   const playPing = () => {
@@ -289,7 +293,9 @@ export function TechnicianDashboard({
         alert(data.error ?? "No se pudo marcar como completado");
         return;
       }
-      setPurchases((prev) => prev.map((x) => (x.id === p.id ? { ...x, jobCompleted: true } : x)));
+      setPurchases((prev) =>
+        prev.map((x) => (x.id === p.id ? { ...x, jobCompleted: true, jobStatus: "COMPLETED" } : x))
+      );
       setReviewShare({
         reviewUrl: data.reviewUrl,
         clientName: p.clientName,
@@ -298,6 +304,27 @@ export function TechnicianDashboard({
       });
     } finally {
       setCompleting(null);
+    }
+  }
+
+  // El técnico avanza el estado del trabajo (el cliente lo ve en vivo en su
+  // página de seguimiento). ASSIGNED → ON_THE_WAY → ARRIVED.
+  async function advanceStatus(p: Purchase, status: "ON_THE_WAY" | "ARRIVED") {
+    setAdvancing(p.id);
+    try {
+      const res = await fetch(`/api/leads/${p.leadId}/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error ?? "No se pudo actualizar el estado");
+        return;
+      }
+      setPurchases((prev) => prev.map((x) => (x.id === p.id ? { ...x, jobStatus: status } : x)));
+    } finally {
+      setAdvancing(null);
     }
   }
 
@@ -572,12 +599,35 @@ export function TechnicianDashboard({
                     </div>
                   </div>
 
-                  {/* Problema + acciones (completar/calificar + asistente IA) */}
+                  {/* Problema + acciones (estado/completar/calificar + asistente IA) */}
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
-                    <p className="line-clamp-1 min-w-0 flex-1 text-xs italic text-zinc-400">
-                      &ldquo;{p.failure}&rdquo;
-                    </p>
-                    <div className="flex shrink-0 items-center gap-2">
+                    <div className="flex min-w-0 flex-1 items-center gap-2">
+                      <StatusPill status={p.jobStatus} />
+                      <p className="line-clamp-1 min-w-0 flex-1 text-xs italic text-zinc-400">
+                        &ldquo;{p.failure}&rdquo;
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 flex-wrap items-center gap-2">
+                      {p.jobStatus === "ASSIGNED" && (
+                        <button
+                          onClick={() => advanceStatus(p, "ON_THE_WAY")}
+                          disabled={advancing === p.id}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-white px-2.5 py-1.5 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-50 disabled:opacity-50"
+                        >
+                          <Navigation className="h-3.5 w-3.5" />
+                          {advancing === p.id ? "..." : "En camino"}
+                        </button>
+                      )}
+                      {p.jobStatus === "ON_THE_WAY" && (
+                        <button
+                          onClick={() => advanceStatus(p, "ARRIVED")}
+                          disabled={advancing === p.id}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-white px-2.5 py-1.5 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-50 disabled:opacity-50"
+                        >
+                          <Home className="h-3.5 w-3.5" />
+                          {advancing === p.id ? "..." : "Ya llegué"}
+                        </button>
+                      )}
                       <button
                         onClick={() => completeJob(p)}
                         disabled={completing === p.id}
@@ -785,5 +835,23 @@ function ConnectionIndicator({ connected }: { connected: boolean }) {
       />
       {connected ? "EN VIVO" : "CONECTANDO"}
     </div>
+  );
+}
+
+function StatusPill({ status }: { status: Purchase["jobStatus"] }) {
+  const map: Record<Purchase["jobStatus"], { label: string; cls: string }> = {
+    ASSIGNED: { label: "Asignado", cls: "border-slate-200 bg-slate-50 text-slate-600" },
+    ON_THE_WAY: { label: "En camino", cls: "border-indigo-200 bg-indigo-50 text-indigo-700" },
+    ARRIVED: { label: "Llegó", cls: "border-violet-200 bg-violet-50 text-violet-700" },
+    COMPLETED: { label: "Completado", cls: "border-emerald-200 bg-emerald-50 text-emerald-700" },
+    CANCELLED: { label: "Cancelado", cls: "border-red-200 bg-red-50 text-red-600" },
+  };
+  const s = map[status] ?? map.ASSIGNED;
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${s.cls}`}
+    >
+      {s.label}
+    </span>
   );
 }

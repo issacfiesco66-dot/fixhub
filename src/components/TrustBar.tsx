@@ -1,10 +1,10 @@
-import { ShieldCheck, Clock, BadgeCheck, Headphones } from "lucide-react";
+import { ShieldCheck, Clock, BadgeCheck, Navigation } from "lucide-react";
 
 const items = [
   { icon: ShieldCheck, label: "Técnicos verificados", sub: "Identidad validada" },
   { icon: Clock, label: "Respuesta inmediata", sub: "Conexión en <5 min" },
   { icon: BadgeCheck, label: "Garantía por escrito", sub: "30 días en cada reparación" },
-  { icon: Headphones, label: "Soporte humano", sub: "Atención por WhatsApp" },
+  { icon: Navigation, label: "Seguimiento en vivo", sub: "Mira llegar a tu técnico" },
 ];
 
 export function TrustBar() {

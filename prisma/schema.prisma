@@ -239,6 +239,9 @@ enum LeadStatus {
 
 model Lead {
   id           String         @id @default(cuid())
+  // Token público para que el cliente siga su solicitud sin cuenta
+  // (/solicitud/[token]). Único e imposible de adivinar.
+  publicToken  String         @unique @default(cuid())
   // Datos del cliente (teléfono OCULTO hasta que un técnico compre)
   clientId     String?
   client       User?          @relation("ClientLeads", fields: [clientId], references: [id])
@@ -282,6 +285,17 @@ enum LeadUrgency {
   EMERGENCY  // fuga/sin luz — visible diferente
 }
 
+// Estado operativo del trabajo una vez que un técnico compró el lead. Alimenta
+// el seguimiento del cliente (página pública /solicitud/[token]): el técnico va
+// avanzando el estado desde su panel y el cliente lo ve en una línea de tiempo.
+enum JobStatus {
+  ASSIGNED     // técnico compró el lead (recién asignado)
+  ON_THE_WAY   // va en camino
+  ARRIVED      // llegó al domicilio
+  COMPLETED    // trabajo terminado
+  CANCELLED    // el cliente canceló
+}
+
 // LeadPurchase es 1:1 con Lead — un lead solo puede ser comprado UNA vez.
 // La exclusividad se hace con @unique en leadId.
 model LeadPurchase {
@@ -294,6 +308,11 @@ model LeadPurchase {
   // Auditoría — qué pasó después
   contactedAt   DateTime?
   jobCompleted  Boolean    @default(false)
+  // Estado operativo para el seguimiento en vivo del cliente.
+  jobStatus     JobStatus  @default(ASSIGNED)
+  onTheWayAt    DateTime?
+  arrivedAt     DateTime?
+  completedAt   DateTime?
   jobAmount     Int?                 // lo que cobró el técnico al cliente
   // Asistente de diagnóstico IA — generado on-demand por el técnico dueño.
   // Json estructurado (causas, pasos, repuestos, seguridad). Se cachea para

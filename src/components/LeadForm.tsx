@@ -12,6 +12,8 @@ import {
   Check,
   CheckCircle2,
   Send,
+  Copy,
+  ExternalLink,
   WashingMachine,
   Refrigerator,
   Shirt,
@@ -56,6 +58,8 @@ export function LeadForm({
 }: Props) {
   const [pending, startTransition] = useTransition();
   const [success, setSuccess] = useState(false);
+  const [trackUrl, setTrackUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedService, setSelectedService] = useState(serviceSlug);
   const [form, setForm] = useState({
@@ -90,6 +94,7 @@ export function LeadForm({
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "Error al enviar");
+        setTrackUrl(typeof data.trackUrl === "string" ? data.trackUrl : null);
         setSuccess(true);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error");
@@ -111,6 +116,44 @@ export function LeadForm({
         <p className="text-sm text-zinc-600">
           Un técnico verificado te contactará en los próximos minutos.
         </p>
+
+        {trackUrl && (
+          <div className="mt-5 rounded-2xl border border-brand-200 bg-white/80 p-4 text-left">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-700">
+              Sigue tu servicio en vivo
+            </p>
+            <p className="mb-3 text-xs text-zinc-500">
+              Mira cuándo tu técnico va en camino y cancela cuando quieras. Sin cuenta —
+              guarda este enlace privado.
+            </p>
+            <div className="mb-3 flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2">
+              <span className="min-w-0 flex-1 truncate text-xs text-zinc-600">{trackUrl}</span>
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(trackUrl);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  } catch {
+                    /* noop */
+                  }
+                }}
+                className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-white px-2 py-1 text-xs font-medium text-zinc-600 ring-1 ring-zinc-200 hover:bg-zinc-50"
+              >
+                <Copy className="h-3 w-3" />
+                {copied ? "Copiado" : "Copiar"}
+              </button>
+            </div>
+            <a
+              href={trackUrl}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-brand-500/30 transition-all hover:scale-[1.01]"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Ver seguimiento de mi solicitud
+            </a>
+          </div>
+        )}
       </motion.div>
     );
   }

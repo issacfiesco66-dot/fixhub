@@ -3,7 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { createLeadSchema } from "@/lib/validators";
 import { getCurrentTechnician } from "@/lib/auth";
 import { rateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
-import { sendAdminLeadNotification } from "@/lib/email";
+import { sendAdminLeadNotification, sendClientTrackingEmail } from "@/lib/email";
+import { getPublicBaseUrl } from "@/lib/url";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -75,6 +76,8 @@ export async function POST(req: NextRequest) {
   // El dashboard del técnico hace polling cada 5s contra /api/leads/feed,
   // así que el lead recién creado lo verán en ≤5s automáticamente.
 
+  const trackUrl = `${getPublicBaseUrl()}/solicitud/${lead.publicToken}`;
+
   // Notificación al admin por correo (best-effort — no rompe la respuesta).
   try {
     await sendAdminLeadNotification({
@@ -91,10 +94,25 @@ export async function POST(req: NextRequest) {
     console.error("[leads] notificación admin falló:", e instanceof Error ? e.message : e);
   }
 
+  // Email al cliente con su link de seguimiento (best-effort, si dejó correo).
+  if (data.clientEmail) {
+    try {
+      await sendClientTrackingEmail({
+        to: data.clientEmail,
+        clientName: data.clientName,
+        serviceName: service.name,
+        trackUrl,
+      });
+    } catch (e) {
+      console.error("[leads] email seguimiento falló:", e instanceof Error ? e.message : e);
+    }
+  }
+
   return NextResponse.json(
     {
       ok: true,
       leadId: lead.id,
+      trackUrl,
       message: "¡Listo! Te contactará un técnico verificado en minutos.",
     },
     { status: 201 }

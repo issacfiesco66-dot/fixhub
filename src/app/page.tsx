@@ -11,6 +11,8 @@ import {
   Home,
   Truck,
   Heart,
+  Star,
+  Quote,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { HeroCTA } from "@/components/HeroCTA";
@@ -60,14 +62,43 @@ const categoryImage: Record<string, { src: string; alt: string }> = {
 };
 
 export default async function HomePage() {
-  const [categories, cities] = await Promise.all([
+  const [categories, cities, reviews] = await Promise.all([
     prisma.category.findMany({
       where: { active: true },
       include: { services: { where: { active: true } } },
       orderBy: { order: "asc" },
     }),
     prisma.city.findMany({ where: { active: true }, orderBy: { name: "asc" }, take: 12 }),
+    // Reseñas reales de clientes (4-5★ con comentario) para prueba social.
+    prisma.review.findMany({
+      where: { submittedAt: { not: null }, rating: { gte: 4 }, comment: { not: null } },
+      select: {
+        id: true,
+        rating: true,
+        comment: true,
+        technician: { select: { displayName: true } },
+        leadPurchase: {
+          select: {
+            lead: {
+              select: {
+                clientName: true,
+                service: { select: { name: true } },
+                city: { select: { name: true } },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { submittedAt: "desc" },
+      take: 6,
+    }),
   ]);
+
+  // Nombre corto del cliente para privacidad: "María L."
+  const shortName = (name: string) => {
+    const parts = name.trim().split(/\s+/);
+    return parts.length > 1 ? `${parts[0]} ${parts[1][0]}.` : parts[0];
+  };
 
   return (
     <main className="relative min-h-screen bg-white">
@@ -249,6 +280,82 @@ export default async function HomePage() {
             );
           })}
         </div>
+      </section>
+
+      {/* Reseñas — prueba social con calificaciones reales de clientes */}
+      <section id="resenas" className="mx-auto max-w-7xl px-6 py-16 sm:px-10 lg:px-16">
+        <div className="mb-10 text-center">
+          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-amber-300/60 bg-amber-50 px-4 py-1.5 text-xs font-medium text-amber-700">
+            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+            Calificaciones reales de clientes verificados
+          </div>
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-900">
+            Lo que dicen nuestros clientes
+          </h2>
+          <p className="mt-1 text-zinc-500">
+            Cada servicio se califica al terminar. Solo clientes reales opinan.
+          </p>
+        </div>
+
+        {reviews.length > 0 ? (
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {reviews.map((r) => (
+              <figure
+                key={r.id}
+                className="relative flex flex-col rounded-3xl border border-slate-200/80 bg-white p-6 shadow-bento"
+              >
+                <Quote className="absolute right-5 top-5 h-7 w-7 text-indigo-100" aria-hidden />
+                <div className="mb-3 flex items-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <Star
+                      key={n}
+                      className={`h-4 w-4 ${
+                        n <= (r.rating ?? 0) ? "fill-amber-400 text-amber-400" : "text-zinc-200"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <blockquote className="flex-1 text-sm leading-relaxed text-zinc-700">
+                  &ldquo;{r.comment}&rdquo;
+                </blockquote>
+                <figcaption className="mt-4 border-t border-slate-100 pt-3">
+                  <div className="text-sm font-semibold text-zinc-900">
+                    {shortName(r.leadPurchase.lead.clientName)}
+                  </div>
+                  <div className="text-xs text-zinc-500">
+                    {r.leadPurchase.lead.service.name} · {r.leadPurchase.lead.city.name}
+                  </div>
+                  <div className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700">
+                    <ShieldCheck className="h-3 w-3" />
+                    Atendido por {r.technician.displayName}
+                  </div>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        ) : (
+          <div className="mx-auto max-w-2xl rounded-3xl border border-dashed border-slate-300 bg-slate-50/60 p-10 text-center">
+            <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600 ring-1 ring-indigo-500/20">
+              <Star className="h-7 w-7" />
+            </div>
+            <h3 className="mb-2 text-lg font-bold text-zinc-900">
+              Aquí verás opiniones de clientes reales
+            </h3>
+            <p className="mx-auto max-w-md text-sm text-zinc-500">
+              Cuando un técnico termina un servicio, el cliente lo califica. Mostramos
+              aquí a los mejores calificados — con verificación de identidad y garantía
+              de 30 días en cada trabajo.
+            </p>
+            <div className="mt-5 flex flex-wrap justify-center gap-3 text-xs font-medium text-zinc-600">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> Técnicos verificados
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5">
+                <Star className="h-3.5 w-3.5 text-amber-500" /> Calificados por clientes
+              </span>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* FAQ */}

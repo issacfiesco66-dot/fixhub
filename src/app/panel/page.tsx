@@ -85,6 +85,7 @@ export default async function PanelPage() {
         failure: p.lead.failure,
         diagnosis: (p.diagnosis as RepairDiagnosis | null) ?? null,
         jobCompleted: p.jobCompleted,
+        jobStatus: p.jobStatus,
       }))}
       packages={packages}
     />

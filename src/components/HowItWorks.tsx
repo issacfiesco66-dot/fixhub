@@ -15,8 +15,8 @@ const steps = [
   },
   {
     icon: Wrench,
-    title: "Te contacta y soluciona",
-    text: "El técnico te llama por WhatsApp o teléfono en menos de 15 minutos para agendar la visita.",
+    title: "Te contacta y lo sigues en vivo",
+    text: "El técnico te contacta en minutos y tú sigues su llegada en tiempo real desde tu enlace privado. ¿Cambio de planes? Cancela con anticipación en un clic.",
     accent: "from-emerald-500 to-emerald-600",
   },
 ];
