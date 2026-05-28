@@ -2,6 +2,10 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { getPublicBaseUrl } from "@/lib/url";
 
+// ISR: regenera el sitemap cada hora leyendo la DB. Los servicios nuevos
+// creados desde el CRUD admin aparecen sin necesidad de redeploy.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getPublicBaseUrl();
 
