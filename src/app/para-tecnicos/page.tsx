@@ -14,6 +14,10 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
+import { prisma } from "@/lib/prisma";
+import { formatMXN } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Únete como técnico — leads + IA gratis para tus reparaciones",
@@ -87,7 +91,18 @@ const toneCls = {
   amber: "bg-amber-500/10 text-amber-700 ring-amber-500/30",
 } as const;
 
-export default function ParaTecnicosPage() {
+export default async function ParaTecnicosPage() {
+  let packages: { name: string; amount: number; bonus: number; popular: boolean }[] = [];
+  try {
+    packages = await prisma.rechargePackage.findMany({
+      where: { active: true },
+      orderBy: { order: "asc" },
+      select: { name: true, amount: true, bonus: true, popular: true },
+    });
+  } catch {
+    packages = [];
+  }
+
   return (
     <main className="relative min-h-screen bg-white">
       <div
@@ -237,6 +252,66 @@ export default function ParaTecnicosPage() {
           ))}
         </div>
       </section>
+
+      {/* Paquetes + ROI — "no tiras tu dinero" */}
+      {packages.length > 0 && (
+        <section className="mx-auto max-w-7xl px-6 py-12 sm:px-10 lg:px-16">
+          <div className="mb-3 text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-zinc-900">
+              Inviertes en clientes, no en publicidad
+            </h2>
+            <p className="mx-auto mt-2 max-w-2xl text-zinc-500">
+              Recargas saldo y pagas solo por los leads que tomas — cada uno es un cliente real con
+              su teléfono. Con cerrar <strong className="text-zinc-700">una sola reparación</strong> ya
+              recuperas el paquete.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {packages.map((p) => {
+              const total = p.amount + p.bonus;
+              const leads = Math.floor(total / 450);
+              return (
+                <div
+                  key={p.name}
+                  className={`relative overflow-hidden rounded-3xl border bg-white p-6 shadow-bento ${
+                    p.popular ? "border-indigo-300 ring-2 ring-indigo-500/20" : "border-slate-200/80"
+                  }`}
+                >
+                  {p.popular && (
+                    <div className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+                      Popular
+                    </div>
+                  )}
+                  <div className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20">
+                    <Wallet className="h-5 w-5" />
+                  </div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+                    {p.name}
+                  </div>
+                  <div className="mt-1 text-3xl font-bold tabular-nums text-zinc-900">
+                    {formatMXN(p.amount)}
+                  </div>
+                  {p.bonus > 0 && (
+                    <div className="mt-1 flex items-center gap-1 text-sm font-medium text-emerald-700">
+                      <Sparkles className="h-3.5 w-3.5" /> +{formatMXN(p.bonus)} de bono
+                    </div>
+                  )}
+                  <div className="mt-4 border-t border-slate-200/80 pt-3 text-sm text-zinc-600">
+                    ≈ <strong className="text-zinc-900">{leads} clientes</strong> potenciales
+                  </div>
+                  <div className="mt-1 flex items-start gap-1.5 text-xs text-emerald-700">
+                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    Con 1 trabajo cerrado ya lo recuperas
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-5 text-center text-xs text-zinc-500">
+            Sin mensualidad · Recargas cuando quieras · Tus primeros 3 leads son gratis
+          </p>
+        </section>
+      )}
 
       {/* CTA final */}
       <section className="mx-auto max-w-7xl px-6 py-12 sm:px-10 lg:px-16">
