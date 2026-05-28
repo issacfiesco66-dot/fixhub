@@ -31,7 +31,7 @@ const sections = [
 
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-slate-200/70 bg-white/60 backdrop-blur">
+    <footer className="mt-16 border-t border-slate-200/70 bg-white">
       <div className="mx-auto max-w-7xl px-6 py-12 sm:px-10 lg:px-16">
         <div className="grid gap-10 md:grid-cols-4">
           {/* Marca + descripción */}

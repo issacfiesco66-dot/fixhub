@@ -52,7 +52,7 @@ export function FAQ() {
           return (
             <div
               key={i}
-              className={`overflow-hidden rounded-2xl border bg-white/80 backdrop-blur transition-all ${
+              className={`overflow-hidden rounded-2xl border bg-white transition-all ${
                 isOpen
                   ? "border-indigo-300 shadow-[0_8px_30px_-10px_rgba(99,102,241,0.25)]"
                   : "border-slate-200/70 hover:border-indigo-200"

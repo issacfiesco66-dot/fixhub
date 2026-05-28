@@ -69,21 +69,22 @@ export default async function HomePage() {
   ]);
 
   return (
-    <main className="relative min-h-screen bg-slate-50/40">
-      {/* Patrón de puntos de fondo — textura sutil estilo SaaS premium */}
+    <main className="relative min-h-screen bg-white">
+      {/* Patrón de puntos — más sutil + solo en desktop (en mobile el bg
+          queda blanco limpio, sin la sensación gris densa) */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px]"
+        className="pointer-events-none fixed inset-0 -z-10 hidden bg-[radial-gradient(#eef2f6_1px,transparent_1px)] [background-size:18px_18px] md:block"
       />
-      {/* Glow ambiental indigo en el top */}
+      {/* Glow ambiental indigo top — más extenso */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.18),transparent_55%)]"
+        className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[800px] bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.12),transparent_60%)]"
       />
 
-      {/* Header — full-width edge-to-edge, glass effect */}
-      <header className="sticky top-0 z-20 w-full border-b border-slate-200/60 bg-white/70 backdrop-blur-md">
-        <div className="flex w-full items-center justify-between px-6 py-4 sm:px-10 lg:px-16">
+      {/* Header — full-width edge-to-edge, sólido en mobile + glass en desktop */}
+      <header className="sticky top-0 z-20 w-full border-b border-slate-200/70 bg-white md:bg-white/80 md:backdrop-blur-md">
+        <div className="flex w-full items-center justify-between px-4 py-3 sm:px-10 sm:py-4 lg:px-16">
           <Link href="/" className="flex items-center gap-2.5 font-semibold text-zinc-900">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-lg shadow-indigo-500/30">
               <Wrench className="h-5 w-5" />
@@ -116,11 +117,11 @@ export default async function HomePage() {
 
       {/* Hero — full-width, ancho generoso, alto razonable */}
       <section className="relative">
-        <div className="w-full px-6 pt-10 pb-20 sm:px-10 lg:px-16 lg:pt-16 lg:pb-24">
-          <div className="mx-auto max-w-[1600px] overflow-hidden rounded-[2rem] border border-white/40 bg-white/70 shadow-[0_20px_80px_-20px_rgba(99,102,241,0.25)] backdrop-blur-md">
+        <div className="w-full px-4 pt-8 pb-14 sm:px-10 sm:pt-10 sm:pb-20 lg:px-16 lg:pt-16 lg:pb-24">
+          <div className="mx-auto max-w-[1600px] overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_20px_80px_-20px_rgba(99,102,241,0.25)] sm:rounded-[2rem] md:border-white/40 md:bg-white/80 md:backdrop-blur-md">
             <div className="grid items-stretch gap-0 lg:grid-cols-5">
-              {/* Texto — 3 cols, padding generoso pero compacto */}
-              <div className="flex flex-col justify-center px-8 py-14 sm:px-12 sm:py-16 lg:col-span-3 lg:py-20 lg:pl-16 lg:pr-10">
+              {/* Texto — 3 cols, padding compacto en mobile, generoso en desktop */}
+              <div className="flex flex-col justify-center px-6 py-10 sm:px-12 sm:py-16 lg:col-span-3 lg:py-20 lg:pl-16 lg:pr-10">
                 <div className="mb-7 inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-300/60 bg-emerald-50/80 px-4 py-1.5 text-xs font-medium text-emerald-700 backdrop-blur">
                   <Sparkles className="h-3.5 w-3.5" />
                   Técnicos verificados · Servicio el mismo día
@@ -249,7 +250,7 @@ export default async function HomePage() {
           {cities.map((c) => (
             <span
               key={c.id}
-              className="rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-sm text-zinc-700 backdrop-blur"
+              className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm text-zinc-700"
             >
               {c.name}
             </span>

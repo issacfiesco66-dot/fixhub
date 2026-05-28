@@ -40,7 +40,7 @@ export function HowItWorks() {
         {steps.map((s, i) => (
           <div
             key={i}
-            className="group relative overflow-hidden rounded-3xl border border-slate-200/70 bg-white/80 p-6 shadow-[0_4px_24px_-8px_rgba(99,102,241,0.08)] backdrop-blur transition-all hover:border-indigo-300 hover:shadow-[0_12px_40px_-10px_rgba(99,102,241,0.25)]"
+            className="group relative overflow-hidden rounded-3xl border border-slate-200/70 bg-white p-6 shadow-[0_4px_24px_-8px_rgba(99,102,241,0.08)] transition-all hover:border-indigo-300 hover:shadow-[0_12px_40px_-10px_rgba(99,102,241,0.25)]"
           >
             <div
               className={`mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${s.accent} text-white shadow-lg`}

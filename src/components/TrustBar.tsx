@@ -14,7 +14,7 @@ export function TrustBar() {
         {items.map((it, i) => (
           <div
             key={i}
-            className="flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-white/60 px-4 py-3 backdrop-blur"
+            className="flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-white px-4 py-3"
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20">
               <it.icon className="h-4 w-4" />
