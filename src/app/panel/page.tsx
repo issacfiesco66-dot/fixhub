@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentTechnician } from "@/lib/auth";
+import type { RepairDiagnosis } from "@/lib/ai-diagnosis";
 import { TechnicianDashboard } from "./_components/TechnicianDashboard";
 
 export const dynamic = "force-dynamic";
@@ -75,6 +76,8 @@ export default async function PanelPage() {
         zoneName: p.lead.zone?.name ?? null,
         clientName: p.lead.clientName,
         clientPhone: p.lead.clientPhone,
+        failure: p.lead.failure,
+        diagnosis: (p.diagnosis as RepairDiagnosis | null) ?? null,
       }))}
       packages={packages}
     />

@@ -277,6 +277,11 @@ model LeadPurchase {
   contactedAt   DateTime?
   jobCompleted  Boolean    @default(false)
   jobAmount     Int?                 // lo que cobró el técnico al cliente
+  // Asistente de diagnóstico IA — generado on-demand por el técnico dueño.
+  // Json estructurado (causas, pasos, repuestos, seguridad). Se cachea para
+  // no regenerar ni gastar tokens dos veces; el técnico puede forzar regenerar.
+  diagnosis     Json?
+  diagnosisAt   DateTime?
   createdAt     DateTime   @default(now())
 
   @@index([technicianId, createdAt])

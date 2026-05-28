@@ -20,6 +20,8 @@ import { LeadAlertModal } from "./LeadAlertModal";
 import { ContactRevealModal } from "./ContactRevealModal";
 import { RechargeModal } from "./RechargeModal";
 import { LeadCard } from "./LeadCard";
+import { DiagnosisModal } from "./DiagnosisModal";
+import type { RepairDiagnosis } from "@/lib/ai-diagnosis";
 
 type Lead = {
   id: string;
@@ -46,6 +48,8 @@ type Purchase = {
   zoneName: string | null;
   clientName: string;
   clientPhone: string;
+  failure: string;
+  diagnosis: RepairDiagnosis | null;
 };
 
 type AlertPayload = {
@@ -100,6 +104,11 @@ export function TechnicianDashboard({
   const [showRecharge, setShowRecharge] = useState(false);
   const [rechargeReason, setRechargeReason] = useState<"manual" | "insufficient">("manual");
   const [connected, setConnected] = useState(false);
+  // Asistente de diagnóstico IA
+  const [purchases, setPurchases] = useState<Purchase[]>(recentPurchases);
+  const [diagTarget, setDiagTarget] = useState<Purchase | null>(null);
+  const [diagLoading, setDiagLoading] = useState(false);
+  const [diagError, setDiagError] = useState<string | null>(null);
 
   const playPing = () => {
     try {
@@ -227,6 +236,27 @@ export function TechnicianDashboard({
       city: data.lead.city,
     });
     router.refresh();
+  }
+
+  async function runDiagnosis(target: Purchase, regenerate: boolean) {
+    setDiagLoading(true);
+    setDiagError(null);
+    try {
+      const res = await fetch(`/api/leads/${target.leadId}/diagnosis`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ regenerate }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "No se pudo generar el diagnóstico");
+      const diagnosis = data.diagnosis as RepairDiagnosis;
+      setPurchases((prev) => prev.map((p) => (p.id === target.id ? { ...p, diagnosis } : p)));
+      setDiagTarget((prev) => (prev ? { ...prev, diagnosis } : prev));
+    } catch (e) {
+      setDiagError(e instanceof Error ? e.message : "Error");
+    } finally {
+      setDiagLoading(false);
+    }
   }
 
   const lowBalance = balance < 450;
@@ -370,7 +400,7 @@ export function TechnicianDashboard({
             tone="amber"
             icon={<Briefcase className="h-5 w-5" />}
             label="Trabajos comprados"
-            value={String(recentPurchases.length)}
+            value={String(purchases.length)}
             hint="últimos 10"
           />
           <BentoStat
@@ -432,51 +462,70 @@ export function TechnicianDashboard({
         {/* ── Historial ───────────────────────────────────── */}
         <section>
           <h2 className="mb-4 text-lg font-semibold tracking-tight">Mis trabajos comprados</h2>
-          {recentPurchases.length === 0 ? (
+          {purchases.length === 0 ? (
             <p className="text-sm text-zinc-500">Aún no has comprado ningún lead.</p>
           ) : (
             <BentoCard className="divide-y divide-slate-200/80 overflow-hidden">
-              {recentPurchases.map((p) => (
-                <div key={p.id} className="flex items-center justify-between p-4">
-                  <div className="flex items-start gap-3">
-                    <BentoIcon tone="indigo">
-                      <Briefcase className="h-4 w-4" />
-                    </BentoIcon>
-                    <div>
-                      <div className="text-sm font-medium text-zinc-900">
-                        {p.serviceName}
-                        {p.brandName && (
-                          <span className="text-zinc-500"> · {p.brandName}</span>
-                        )}
+              {purchases.map((p) => (
+                <div key={p.id} className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <BentoIcon tone="indigo">
+                        <Briefcase className="h-4 w-4" />
+                      </BentoIcon>
+                      <div>
+                        <div className="text-sm font-medium text-zinc-900">
+                          {p.serviceName}
+                          {p.brandName && (
+                            <span className="text-zinc-500"> · {p.brandName}</span>
+                          )}
+                        </div>
+                        <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+                          <span>{p.clientName}</span>
+                          <span className="text-zinc-700">•</span>
+                          <MapPin className="h-3 w-3" />
+                          <span>
+                            {p.cityName}
+                            {p.zoneName ? `, ${p.zoneName}` : ""}
+                          </span>
+                          <span className="text-zinc-700">•</span>
+                          <a
+                            href={`tel:${p.clientPhone}`}
+                            className="text-indigo-600 hover:underline"
+                          >
+                            {p.clientPhone}
+                          </a>
+                        </div>
                       </div>
-                      <div className="mt-0.5 flex items-center gap-2 text-xs text-zinc-500">
-                        <span>{p.clientName}</span>
-                        <span className="text-zinc-700">•</span>
-                        <MapPin className="h-3 w-3" />
-                        <span>
-                          {p.cityName}
-                          {p.zoneName ? `, ${p.zoneName}` : ""}
-                        </span>
-                        <span className="text-zinc-700">•</span>
-                        <a
-                          href={`tel:${p.clientPhone}`}
-                          className="text-indigo-600 hover:underline"
-                        >
-                          {p.clientPhone}
-                        </a>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-semibold tabular-nums text-red-400">
+                        -{formatMXN(p.pricePaid)}
+                      </div>
+                      <div className="text-[11px] text-zinc-500">
+                        {new Date(p.createdAt).toLocaleDateString("es-MX", {
+                          day: "numeric",
+                          month: "short",
+                        })}
                       </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm font-semibold tabular-nums text-red-400">
-                      -{formatMXN(p.pricePaid)}
-                    </div>
-                    <div className="text-[11px] text-zinc-500">
-                      {new Date(p.createdAt).toLocaleDateString("es-MX", {
-                        day: "numeric",
-                        month: "short",
-                      })}
-                    </div>
+
+                  {/* Problema + asistente de diagnóstico IA */}
+                  <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
+                    <p className="line-clamp-1 flex-1 text-xs italic text-zinc-400">
+                      &ldquo;{p.failure}&rdquo;
+                    </p>
+                    <button
+                      onClick={() => {
+                        setDiagError(null);
+                        setDiagTarget(p);
+                      }}
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-100"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      {p.diagnosis ? "Ver soluciones" : "Soluciones IA"}
+                    </button>
                   </div>
                 </div>
               ))}
@@ -507,6 +556,19 @@ export function TechnicianDashboard({
             balance={balance}
             reason={rechargeReason}
             onClose={() => setShowRecharge(false)}
+          />
+        )}
+        {diagTarget && (
+          <DiagnosisModal
+            serviceName={diagTarget.serviceName}
+            brandName={diagTarget.brandName}
+            problem={diagTarget.failure}
+            diagnosis={diagTarget.diagnosis}
+            loading={diagLoading}
+            error={diagError}
+            onGenerate={() => runDiagnosis(diagTarget, false)}
+            onRegenerate={() => runDiagnosis(diagTarget, true)}
+            onClose={() => setDiagTarget(null)}
           />
         )}
       </AnimatePresence>
