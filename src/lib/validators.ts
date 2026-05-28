@@ -124,6 +124,28 @@ export const userUpdateSchema = z
 // TÉCNICOS (admin — edición ampliada)
 // ─────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────
+// INGEST de prospects (scraper externo → /api/prospectos/ingest)
+// ─────────────────────────────────────────────────────────────────────
+
+export const ingestProspectSchema = z
+  .object({
+    nombre: z.string().min(2).max(160),
+    telefono: z.string().max(30).optional().or(z.literal("")),
+    email: z.string().max(160).optional().or(z.literal("")),
+    direccion: z.string().max(300).optional().or(z.literal("")),
+    categoria: z.string().max(120).optional().or(z.literal("")),
+    ciudad: z.string().max(120).optional().or(z.literal("")),
+  })
+  .strict();
+
+export const ingestPayloadSchema = z
+  .object({
+    prospectos: z.array(ingestProspectSchema).min(1).max(100),
+    source: z.string().max(80).optional(),
+  })
+  .strict();
+
 export const technicianUpdateSchema = z
   .object({
     verified: z.boolean().optional(),

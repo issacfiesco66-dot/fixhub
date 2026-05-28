@@ -12,12 +12,14 @@ import { getPublicBaseUrl } from "@/lib/url";
 // algún día expones la API a partners). Para MVP solo se acepta same-origin
 // + localhost en dev.
 //
-// Exenciones:
+// Exenciones (máquina-a-máquina autenticadas por secret/firma, no por cookies,
+// y que NO envían header Origin porque no son browsers):
 //   - GET/HEAD/OPTIONS: read-only, no necesitan CSRF
-//   - /api/billing/webhook: Stripe-signed con HMAC, no manda Origin
+//   - /api/billing/webhook: Stripe-signed con HMAC
+//   - /api/prospectos/ingest: scraper externo con Bearer INGEST_WEBHOOK_SECRET
 
 const MUTATING = new Set(["POST", "PATCH", "PUT", "DELETE"]);
-const STRIPE_WEBHOOK_PATH = "/api/billing/webhook";
+const CSRF_EXEMPT_PATHS = new Set(["/api/billing/webhook", "/api/prospectos/ingest"]);
 
 function getExtraAllowedOrigins(): Set<string> {
   const set = new Set<string>();
@@ -36,7 +38,7 @@ export function middleware(req: NextRequest) {
 
   if (!MUTATING.has(method)) return NextResponse.next();
   if (!nextUrl.pathname.startsWith("/api/")) return NextResponse.next();
-  if (nextUrl.pathname === STRIPE_WEBHOOK_PATH) return NextResponse.next();
+  if (CSRF_EXEMPT_PATHS.has(nextUrl.pathname)) return NextResponse.next();
 
   const origin = req.headers.get("origin");
   // Si no hay Origin (curl o un cliente no-browser que no lo envía), bloqueamos

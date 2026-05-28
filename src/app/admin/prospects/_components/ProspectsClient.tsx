@@ -175,7 +175,7 @@ function ProspectRow({
   const meta = statusMeta[prospect.status];
   const cleanPhone = prospect.phone.replace(/\D/g, "");
   const waText = encodeURIComponent(
-    `Hola ${prospect.name}, te contactamos de FixHub. ¿Tienes algún electrodoméstico que necesite revisión?`
+    `Hola ${prospect.name}, te escribo de FixHub. Conectamos a técnicos como ustedes con clientes que buscan su servicio en su zona. Tus primeros 3 clientes son gratis, y tienes un asistente con IA para tus reparaciones. ¿Te interesa recibir más clientes? Regístrate gratis aquí: https://fixhub-sigma.vercel.app/para-tecnicos`
   );
 
   return (

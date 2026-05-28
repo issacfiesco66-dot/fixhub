@@ -12,6 +12,7 @@ import {
   SearchCheck,
   Library,
   UserCog,
+  Radar,
 } from "lucide-react";
 import { getCurrentAdmin } from "@/lib/auth";
 
@@ -19,6 +20,7 @@ const nav = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/searches", label: "Búsquedas", icon: SearchCheck },
   { href: "/admin/catalogo", label: "Catálogo", icon: Library },
+  { href: "/admin/scraper", label: "Scraper", icon: Radar },
   { href: "/admin/prospects", label: "Prospects", icon: Target },
   { href: "/admin/leads", label: "Leads", icon: Briefcase },
   { href: "/admin/technicians", label: "Técnicos", icon: Users },
