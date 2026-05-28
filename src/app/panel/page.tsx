@@ -84,6 +84,7 @@ export default async function PanelPage() {
         clientPhone: p.lead.clientPhone,
         failure: p.lead.failure,
         diagnosis: (p.diagnosis as RepairDiagnosis | null) ?? null,
+        jobCompleted: p.jobCompleted,
       }))}
       packages={packages}
     />

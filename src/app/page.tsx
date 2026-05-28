@@ -94,7 +94,7 @@ export default async function HomePage() {
           </Link>
           <div className="flex items-center gap-2">
             <Link
-              href="/panel/registro"
+              href="/para-tecnicos"
               className="hidden rounded-full px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-indigo-700 sm:inline-block"
             >
               Únete como técnico

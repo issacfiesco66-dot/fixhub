@@ -91,3 +91,65 @@ Si no fuiste tú, ignora este correo — tu contraseña actual sigue siendo vál
     text,
   });
 }
+
+export async function sendReviewRequestEmail(args: {
+  to: string;
+  reviewUrl: string;
+  technicianName: string;
+  serviceName: string;
+  clientName?: string | null;
+}) {
+  const { to, reviewUrl, technicianName, serviceName, clientName } = args;
+  const greeting = clientName ? `Hola ${clientName.split(" ")[0]}` : "Hola";
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family:-apple-system,system-ui,Segoe UI,sans-serif;background:#f8fafc;margin:0;padding:24px;">
+  <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:32px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;">
+      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#4338ca);display:inline-flex;align-items:center;justify-content:center;color:white;font-weight:700;">🔧</div>
+      <span style="font-size:18px;font-weight:600;color:#0f172a;">FixHub</span>
+    </div>
+
+    <h1 style="font-size:22px;color:#0f172a;margin:0 0 16px;">${greeting},</h1>
+    <p style="color:#475569;line-height:1.6;margin:0 0 16px;">
+      ${technicianName} marcó como completado tu servicio de <strong>${serviceName}</strong>.
+      ¿Cómo te fue? Tu opinión nos ayuda a mantener a los mejores técnicos en FixHub.
+    </p>
+
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${reviewUrl}" style="display:inline-block;background:linear-gradient(135deg,#6366f1,#7c3aed);color:#fff;font-weight:600;padding:12px 28px;border-radius:12px;text-decoration:none;box-shadow:0 4px 12px rgba(99,102,241,0.3);">
+        Calificar el servicio
+      </a>
+    </div>
+
+    <p style="color:#94a3b8;font-size:11px;line-height:1.6;margin:24px 0 0;border-top:1px solid #e2e8f0;padding-top:16px;">
+      Si el botón no funciona, copia y pega este enlace:<br>
+      <a href="${reviewUrl}" style="color:#6366f1;word-break:break-all;">${reviewUrl}</a>
+    </p>
+  </div>
+  <p style="text-align:center;color:#94a3b8;font-size:11px;margin-top:16px;">
+    © ${new Date().getFullYear()} FixHub · Hecho en México
+  </p>
+</body>
+</html>`.trim();
+
+  const text = `${greeting},
+
+${technicianName} marcó como completado tu servicio de ${serviceName}.
+¿Cómo te fue? Califica el servicio aquí:
+
+${reviewUrl}
+
+— FixHub`;
+
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to,
+    subject: `¿Cómo te fue con tu servicio de ${serviceName}? — FixHub`,
+    html,
+    text,
+  });
+}

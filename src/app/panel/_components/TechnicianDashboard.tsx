@@ -13,6 +13,11 @@ import {
   Sparkles,
   MapPin,
   Wrench,
+  CheckCircle2,
+  Star,
+  X,
+  Copy,
+  MessageCircle,
 } from "lucide-react";
 import { formatMXN } from "@/lib/utils";
 import { BentoCard, BentoIcon } from "@/components/ui/BentoCard";
@@ -51,6 +56,14 @@ type Purchase = {
   clientPhone: string;
   failure: string;
   diagnosis: RepairDiagnosis | null;
+  jobCompleted: boolean;
+};
+
+type ReviewShare = {
+  reviewUrl: string;
+  clientName: string;
+  clientPhone: string;
+  emailed: boolean;
 };
 
 type AlertPayload = {
@@ -114,6 +127,8 @@ export function TechnicianDashboard({
   const [diagLoading, setDiagLoading] = useState(false);
   const [diagError, setDiagError] = useState<string | null>(null);
   const [showAssist, setShowAssist] = useState(false);
+  const [completing, setCompleting] = useState<string | null>(null);
+  const [reviewShare, setReviewShare] = useState<ReviewShare | null>(null);
 
   const playPing = () => {
     try {
@@ -262,6 +277,27 @@ export function TechnicianDashboard({
       setDiagError(e instanceof Error ? e.message : "Error");
     } finally {
       setDiagLoading(false);
+    }
+  }
+
+  async function completeJob(p: Purchase) {
+    setCompleting(p.id);
+    try {
+      const res = await fetch(`/api/leads/${p.leadId}/complete`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error ?? "No se pudo marcar como completado");
+        return;
+      }
+      setPurchases((prev) => prev.map((x) => (x.id === p.id ? { ...x, jobCompleted: true } : x)));
+      setReviewShare({
+        reviewUrl: data.reviewUrl,
+        clientName: p.clientName,
+        clientPhone: p.clientPhone,
+        emailed: !!data.emailed,
+      });
+    } finally {
+      setCompleting(null);
     }
   }
 
@@ -536,21 +572,39 @@ export function TechnicianDashboard({
                     </div>
                   </div>
 
-                  {/* Problema + asistente de diagnóstico IA */}
-                  <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
-                    <p className="line-clamp-1 flex-1 text-xs italic text-zinc-400">
+                  {/* Problema + acciones (completar/calificar + asistente IA) */}
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
+                    <p className="line-clamp-1 min-w-0 flex-1 text-xs italic text-zinc-400">
                       &ldquo;{p.failure}&rdquo;
                     </p>
-                    <button
-                      onClick={() => {
-                        setDiagError(null);
-                        setDiagTarget(p);
-                      }}
-                      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-100"
-                    >
-                      <Sparkles className="h-3.5 w-3.5" />
-                      {p.diagnosis ? "Ver soluciones" : "Soluciones IA"}
-                    </button>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button
+                        onClick={() => completeJob(p)}
+                        disabled={completing === p.id}
+                        className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
+                          p.jobCompleted
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                            : "border-slate-200 bg-white text-zinc-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        {completing === p.id
+                          ? "..."
+                          : p.jobCompleted
+                          ? "Pedir calificación"
+                          : "Marcar completado"}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setDiagError(null);
+                          setDiagTarget(p);
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-100"
+                      >
+                        <Sparkles className="h-3.5 w-3.5" />
+                        {p.diagnosis ? "Ver soluciones" : "Soluciones IA"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -598,6 +652,9 @@ export function TechnicianDashboard({
           />
         )}
         {showAssist && <AssistModal onClose={() => setShowAssist(false)} />}
+        {reviewShare && (
+          <ReviewShareModal share={reviewShare} onClose={() => setReviewShare(null)} />
+        )}
       </AnimatePresence>
     </div>
   );
@@ -631,6 +688,84 @@ function BentoStat({
       </div>
       <div className="text-[11px] text-zinc-500">{hint}</div>
     </BentoCard>
+  );
+}
+
+function ReviewShareModal({ share, onClose }: { share: ReviewShare; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const waText = encodeURIComponent(
+    `Hola ${share.clientName.split(" ")[0]}, gracias por confiar en mí. ¿Me ayudas calificando el servicio? ${share.reviewUrl}`
+  );
+  const cleanPhone = share.clientPhone.replace(/\D/g, "");
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(share.reviewUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* noop */
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"
+      />
+      <motion.div
+        initial={{ scale: 0.96, opacity: 0, y: 16 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.96, opacity: 0 }}
+        className="relative w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl"
+      >
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-slate-100"
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20">
+            <Star className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold tracking-tight text-zinc-900">Trabajo completado</h2>
+            <p className="text-xs text-zinc-500">
+              {share.emailed
+                ? "Le enviamos un email al cliente para calificarte."
+                : "Comparte el link para que el cliente te califique."}
+            </p>
+          </div>
+        </div>
+
+        <div className="mb-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+          <span className="min-w-0 flex-1 truncate text-xs text-zinc-600">{share.reviewUrl}</span>
+          <button
+            onClick={copy}
+            className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-white px-2 py-1 text-xs font-medium text-zinc-600 ring-1 ring-slate-200 hover:bg-slate-50"
+          >
+            <Copy className="h-3 w-3" />
+            {copied ? "Copiado" : "Copiar"}
+          </button>
+        </div>
+
+        <a
+          href={`https://wa.me/${cleanPhone}?text=${waText}`}
+          target="_blank"
+          rel="noopener"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-500/30 transition-all hover:bg-emerald-500"
+        >
+          <MessageCircle className="h-4 w-4" />
+          Enviar por WhatsApp al cliente
+        </a>
+      </motion.div>
+    </div>
   );
 }
 

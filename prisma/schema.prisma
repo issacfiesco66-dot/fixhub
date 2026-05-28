@@ -183,6 +183,7 @@ model Technician {
   purchases     LeadPurchase[]
   transactions  BalanceTransaction[]
   assistLogs    TechAssistLog[]
+  reviews       Review[]
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
 
@@ -299,9 +300,31 @@ model LeadPurchase {
   // no regenerar ni gastar tokens dos veces; el técnico puede forzar regenerar.
   diagnosis     Json?
   diagnosisAt   DateTime?
+  review        Review?
   createdAt     DateTime   @default(now())
 
   @@index([technicianId, createdAt])
+}
+
+// Calificación del cliente al técnico tras un servicio. Se crea cuando el
+// técnico marca el trabajo como completado (con un token único) y el cliente
+// la completa desde un link público (/calificar/[token]), sin necesidad de
+// cuenta. hadIssue marca si hubo reclamo/garantía — métrica para premiar a
+// los técnicos con mejor calidad.
+model Review {
+  id             String       @id @default(cuid())
+  leadPurchaseId String       @unique
+  leadPurchase   LeadPurchase @relation(fields: [leadPurchaseId], references: [id], onDelete: Cascade)
+  technicianId   String
+  technician     Technician   @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  token          String       @unique // link público de calificación
+  rating         Int? // 1-5 — null hasta que el cliente califica
+  comment        String?      @db.Text
+  hadIssue       Boolean      @default(false) // ¿hubo reclamo / uso de garantía?
+  submittedAt    DateTime? // null = pendiente
+  createdAt      DateTime     @default(now())
+
+  @@index([technicianId, submittedAt])
 }
 
 // ─────────────────────────────────────────────────────────────────────
