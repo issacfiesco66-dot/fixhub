@@ -267,8 +267,8 @@ export default async function ServiceLandingPage({ params }: { params: Promise<P
           }}
         />
       )}
-      <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
+      <header className="sticky top-0 z-20 w-full border-b border-slate-200/70 bg-white/80 backdrop-blur-md">
+        <div className="flex w-full items-center justify-between px-6 py-3.5 sm:px-10 lg:px-16">
           <Link href="/" className="flex items-center gap-2 font-semibold text-zinc-900">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-glow-indigo">
               <Wrench className="h-4 w-4" />
