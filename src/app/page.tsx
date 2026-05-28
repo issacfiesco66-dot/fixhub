@@ -94,8 +94,8 @@ export default async function HomePage() {
             <span className="text-lg tracking-tight">FixHub</span>
           </Link>
 
-          {/* Navegación central — llena el header en desktop */}
-          <nav className="hidden items-center gap-8 lg:flex">
+          {/* Navegación central — llena el header en desktop/tablet */}
+          <nav className="hidden items-center gap-6 md:flex lg:gap-8">
             <Link href="#servicios" className="text-sm font-medium text-zinc-600 transition-colors hover:text-indigo-700">
               Servicios
             </Link>
