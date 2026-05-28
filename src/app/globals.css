@@ -5,13 +5,11 @@
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f172a;
-    --foreground: #f1f5f9;
-  }
+  /* FixHub es un diseño claro (light) en todas sus páginas. color-scheme: light
+     evita que un navegador/SO en modo oscuro pinte el body, inputs y scrollbars
+     en oscuro — antes el body quedaba #0f172a y se "transparentaba" bajo los
+     fondos semi-translúcidos (bg-slate-50/40, bg-white/70) de las páginas. */
+  color-scheme: light;
 }
 
 html, body {

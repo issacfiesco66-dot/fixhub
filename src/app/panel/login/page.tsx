@@ -33,7 +33,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="dark relative flex min-h-screen items-center justify-center bg-slate-50/40 p-4 text-zinc-900">
+    <main className="relative flex min-h-screen items-center justify-center bg-slate-50/40 p-4 text-zinc-900">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.18),transparent_60%)]" />
 
       <motion.div
