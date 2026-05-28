@@ -6,6 +6,7 @@ import {
   Briefcase,
   Package,
   Globe,
+  Shield,
   LogOut,
   Wrench,
 } from "lucide-react";
@@ -18,6 +19,7 @@ const nav = [
   { href: "/admin/technicians", label: "Técnicos", icon: Users },
   { href: "/admin/seo", label: "SEO Geo", icon: Globe },
   { href: "/admin/packages", label: "Paquetes", icon: Package },
+  { href: "/admin/perfil", label: "Mi perfil", icon: Shield },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
