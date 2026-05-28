@@ -231,15 +231,15 @@ export default async function HomePage() {
                   {cat.description && (
                     <p className="mb-4 text-sm text-zinc-500">{cat.description}</p>
                   )}
-                  <ul className="space-y-1">
+                  <ul className="space-y-2">
                     {cat.services.map((sv) => (
                       <li key={sv.id}>
                         <Link
                           href={`/${sv.slug}`}
-                          className="group/link flex items-center justify-between rounded-xl px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-indigo-50 hover:text-indigo-700"
+                          className="group/link flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-sm font-medium text-zinc-700 transition-all hover:-translate-y-0.5 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 hover:shadow-sm"
                         >
                           <span>{sv.name}</span>
-                          <ArrowRight className="h-3.5 w-3.5 opacity-0 transition-all group-hover/link:translate-x-0.5 group-hover/link:opacity-100" />
+                          <ArrowRight className="h-4 w-4 shrink-0 text-indigo-400 transition-transform group-hover/link:translate-x-0.5 group-hover/link:text-indigo-600" />
                         </Link>
                       </li>
                     ))}
