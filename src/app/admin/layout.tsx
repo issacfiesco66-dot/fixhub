@@ -9,14 +9,20 @@ import {
   Shield,
   LogOut,
   Wrench,
+  SearchCheck,
+  Library,
+  UserCog,
 } from "lucide-react";
 import { getCurrentAdmin } from "@/lib/auth";
 
 const nav = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/searches", label: "Búsquedas", icon: SearchCheck },
+  { href: "/admin/catalogo", label: "Catálogo", icon: Library },
   { href: "/admin/prospects", label: "Prospects", icon: Target },
   { href: "/admin/leads", label: "Leads", icon: Briefcase },
   { href: "/admin/technicians", label: "Técnicos", icon: Users },
+  { href: "/admin/usuarios", label: "Usuarios", icon: UserCog },
   { href: "/admin/seo", label: "SEO Geo", icon: Globe },
   { href: "/admin/packages", label: "Paquetes", icon: Package },
   { href: "/admin/perfil", label: "Mi perfil", icon: Shield },

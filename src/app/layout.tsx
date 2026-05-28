@@ -21,6 +21,9 @@ export const metadata: Metadata = {
     locale: "es_MX",
     siteName: "FixHub",
   },
+  verification: {
+    google: "VjMDsUWqI2OIcHJ0ZtG8I5ShnauPUFvqMXhsXZobZyk",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

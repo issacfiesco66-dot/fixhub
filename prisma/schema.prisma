@@ -48,6 +48,7 @@ model Service {
   technicians     TechnicianService[]
   brands          ServiceBrand[]
   contents        ServiceContent[]
+  searches        ServiceSearch[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
@@ -401,6 +402,54 @@ model ProcessedWebhookEvent {
   type      String
   createdAt DateTime @default(now())
 
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// SERVICE SEARCH — búsquedas del visitante (incluye misses).
+// Captura demanda no satisfecha: queries que el catálogo no tiene aún.
+// Admin las revisa y "promueve" a Service real → entra al pipeline de SEO existente.
+// citySlug usa "" en lugar de NULL para que @@unique funcione (Postgres trata
+// NULL como distinto, lo que rompería el dedupe).
+// ─────────────────────────────────────────────────────────────────────
+
+enum ServiceSearchStatus {
+  PENDING       // recién capturada, sin revisar
+  RESEARCHING   // admin investigando viabilidad / buscando técnico
+  LAUNCHED      // ya se creó como Service (catálogo)
+  DISCARDED     // spam, irrelevante, fuera de scope
+}
+
+model ServiceSearch {
+  id               String              @id @default(cuid())
+  rawQuery         String                                  // tal como la tipeó el usuario
+  normalizedQuery  String                                  // lowercase, sin acentos, sin extras
+  citySlug         String              @default("")        // "" = sin ciudad (no NULL, ver comment)
+  // Si la query matcheó un Service del catálogo, lo guardamos. hasMatch=true
+  // marca queries que encontraron resultados (analytics: conversion vs gap).
+  matchedServiceId String?
+  matchedService   Service?            @relation(fields: [matchedServiceId], references: [id])
+  hasMatch         Boolean             @default(false)
+  // Popularity signal — incrementa cada vez que se repite la misma query+ciudad
+  count            Int                 @default(1)
+  // Captura opcional de interesado ("avísame cuando tengan X")
+  email            String?
+  phone            String?
+  // Pipeline admin
+  status           ServiceSearchStatus @default(PENDING)
+  adminNotes       String?             @db.Text
+  // Atribución y anti-spam
+  source           String?                                 // utm_source o página de origen
+  ipHash           String?                                 // SHA-256 de IP (sin guardar IP raw)
+  userAgent        String?
+  // Timestamps
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  lastSeenAt       DateTime            @default(now())     // útil para "queries recientes"
+
+  @@unique([normalizedQuery, citySlug])
+  @@index([status, count])
+  @@index([hasMatch, count])
   @@index([createdAt])
 }
 

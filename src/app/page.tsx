@@ -18,6 +18,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { TrustBar } from "@/components/TrustBar";
 import { FAQ } from "@/components/FAQ";
 import { Footer } from "@/components/Footer";
+import { SiteSearch } from "@/components/SiteSearch";
 
 // Render on-demand. Antes era revalidate=3600 (ISR), pero eso intenta
 // pre-renderizar en build y necesita DATABASE_URL desde el primer deploy.
@@ -134,10 +135,15 @@ export default async function HomePage() {
                   </span>
                 </h1>
 
-                <p className="mb-10 max-w-xl text-base leading-relaxed text-zinc-600 md:text-lg">
+                <p className="mb-8 max-w-xl text-base leading-relaxed text-zinc-600 md:text-lg">
                   Electrodomésticos, plomería, electricidad y más. El mismo día,
                   en tu zona, con garantía.
                 </p>
+
+                {/* Buscador del sitio — captura demanda + autocomplete contra catálogo */}
+                <div className="mb-6 max-w-2xl">
+                  <SiteSearch cities={cities.map((c) => ({ slug: c.slug, name: c.name }))} />
+                </div>
 
                 <HeroCTA />
 
