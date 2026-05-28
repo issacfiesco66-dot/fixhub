@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { createLeadSchema } from "@/lib/validators";
 import { getCurrentTechnician } from "@/lib/auth";
 import { rateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
+import { sendAdminLeadNotification } from "@/lib/email";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -73,6 +74,22 @@ export async function POST(req: NextRequest) {
   // En Vercel serverless no hay broker in-memory que sobreviva entre requests.
   // El dashboard del técnico hace polling cada 5s contra /api/leads/feed,
   // así que el lead recién creado lo verán en ≤5s automáticamente.
+
+  // Notificación al admin por correo (best-effort — no rompe la respuesta).
+  try {
+    await sendAdminLeadNotification({
+      service: service.name,
+      brand: brand?.name ?? null,
+      city: city.name,
+      zone: zone?.name ?? null,
+      urgency: data.urgency,
+      failure: data.failure,
+      clientName: data.clientName,
+      clientPhone: data.clientPhone,
+    });
+  } catch (e) {
+    console.error("[leads] notificación admin falló:", e instanceof Error ? e.message : e);
+  }
 
   return NextResponse.json(
     {

@@ -25,6 +25,99 @@ function getResend(): Resend {
 
 const FROM_EMAIL = process.env.EMAIL_FROM ?? "FixHub <onboarding@resend.dev>";
 
+// Correo del admin que recibe las notificaciones internas (lead nuevo, técnico
+// nuevo). Configurable por env var. Si no está, las notificaciones se omiten.
+const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL ?? "";
+
+function adminShell(title: string, rows: { label: string; value: string }[], cta?: { label: string; url: string }): string {
+  const rowsHtml = rows
+    .map(
+      (r) =>
+        `<tr><td style="padding:6px 0;color:#64748b;font-size:13px;width:130px;vertical-align:top;">${r.label}</td><td style="padding:6px 0;color:#0f172a;font-size:14px;font-weight:500;">${r.value || "—"}</td></tr>`
+    )
+    .join("");
+  const ctaHtml = cta
+    ? `<div style="text-align:center;margin:24px 0 4px;"><a href="${cta.url}" style="display:inline-block;background:linear-gradient(135deg,#6366f1,#7c3aed);color:#fff;font-weight:600;padding:11px 26px;border-radius:12px;text-decoration:none;">${cta.label}</a></div>`
+    : "";
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="font-family:-apple-system,system-ui,Segoe UI,sans-serif;background:#f8fafc;margin:0;padding:24px;">
+  <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:28px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+      <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#6366f1,#4338ca);display:inline-flex;align-items:center;justify-content:center;color:white;font-weight:700;">🔧</div>
+      <span style="font-size:16px;font-weight:600;color:#0f172a;">FixHub · Admin</span>
+    </div>
+    <h1 style="font-size:19px;color:#0f172a;margin:0 0 16px;">${title}</h1>
+    <table style="width:100%;border-collapse:collapse;">${rowsHtml}</table>
+    ${ctaHtml}
+  </div>
+</body></html>`.trim();
+}
+
+export async function sendAdminLeadNotification(args: {
+  service: string;
+  brand?: string | null;
+  city: string;
+  zone?: string | null;
+  urgency: string;
+  failure: string;
+  clientName: string;
+  clientPhone: string;
+}) {
+  if (!ADMIN_EMAIL) return; // sin destinatario configurado, no-op
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fixhub-sigma.vercel.app";
+  const urgencyLabel = args.urgency === "EMERGENCY" ? "🚨 Emergencia" : args.urgency === "URGENT" ? "⚡ Urgente" : "Normal";
+  const html = adminShell(
+    "Nueva solicitud de servicio",
+    [
+      { label: "Servicio", value: `${args.service}${args.brand ? ` · ${args.brand}` : ""}` },
+      { label: "Ubicación", value: `${args.city}${args.zone ? `, ${args.zone}` : ""}` },
+      { label: "Urgencia", value: urgencyLabel },
+      { label: "Cliente", value: args.clientName },
+      { label: "Teléfono", value: args.clientPhone },
+      { label: "Problema", value: args.failure },
+    ],
+    { label: "Ver leads en el panel", url: `${baseUrl}/admin/leads` }
+  );
+  const text = `Nueva solicitud: ${args.service}${args.brand ? ` (${args.brand})` : ""} en ${args.city}. Cliente: ${args.clientName} — ${args.clientPhone}. Problema: ${args.failure}`;
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: ADMIN_EMAIL,
+    subject: `🛎️ Nuevo lead: ${args.service} en ${args.city}`,
+    html,
+    text,
+  });
+}
+
+export async function sendAdminTechnicianNotification(args: {
+  displayName: string;
+  email: string;
+  phone: string;
+  cities: string[];
+  services: string[];
+}) {
+  if (!ADMIN_EMAIL) return;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fixhub-sigma.vercel.app";
+  const html = adminShell(
+    "Nuevo técnico registrado (pendiente de verificar)",
+    [
+      { label: "Nombre", value: args.displayName },
+      { label: "Email", value: args.email },
+      { label: "Teléfono", value: args.phone },
+      { label: "Ciudades", value: args.cities.join(", ") },
+      { label: "Servicios", value: args.services.join(", ") },
+    ],
+    { label: "Verificar técnico", url: `${baseUrl}/admin/technicians` }
+  );
+  const text = `Nuevo técnico: ${args.displayName} (${args.email}, ${args.phone}). Ciudades: ${args.cities.join(", ")}. Servicios: ${args.services.join(", ")}. Verifícalo en /admin/technicians`;
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: ADMIN_EMAIL,
+    subject: `👷 Nuevo técnico: ${args.displayName}`,
+    html,
+    text,
+  });
+}
+
 export async function sendPasswordResetEmail(args: {
   to: string;
   resetUrl: string;

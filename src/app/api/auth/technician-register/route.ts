@@ -3,6 +3,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { setTechnicianSession } from "@/lib/auth";
+import { sendAdminTechnicianNotification } from "@/lib/email";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -116,6 +117,19 @@ export async function POST(req: NextRequest) {
 
       return technician;
     });
+
+    // Notificación al admin por correo (best-effort — no rompe el registro).
+    try {
+      await sendAdminTechnicianNotification({
+        displayName: d.displayName,
+        email: d.email,
+        phone: d.phone,
+        cities: cities.map((c) => c.slug),
+        services: services.map((s) => s.slug),
+      });
+    } catch (e) {
+      console.error("[register] notificación admin falló:", e instanceof Error ? e.message : e);
+    }
 
     // Auto-login — setea cookie firmada
     await setTechnicianSession(tech.id);
