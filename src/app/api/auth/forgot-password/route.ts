@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
 import { rateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
+import { getPublicBaseUrl } from "@/lib/url";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -55,7 +56,7 @@ export async function POST(req: NextRequest) {
       data: { userId: user.id, tokenHash, expiresAt },
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const appUrl = getPublicBaseUrl();
     const resetUrl = `${appUrl}/restablecer-pass?token=${rawToken}`;
 
     try {

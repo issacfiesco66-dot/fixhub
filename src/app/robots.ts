@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
+import { getPublicBaseUrl } from "@/lib/url";
 
 export default function robots(): MetadataRoute.Robots {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const base = getPublicBaseUrl();
   return {
     rules: [
       { userAgent: "*", allow: "/", disallow: ["/api/", "/panel/"] },

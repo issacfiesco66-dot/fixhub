@@ -21,6 +21,7 @@ import { prisma } from "@/lib/prisma";
 import { LeadForm } from "@/components/LeadForm";
 import { buildLocalBusinessJsonLd } from "@/lib/seo";
 import { findServiceContent } from "@/lib/service-content-store";
+import { getPublicBaseUrl } from "@/lib/url";
 
 // Resuelve la imagen del servicio si ya fue generada en public/images/
 async function getServiceImage(serviceSlug: string) {
@@ -229,7 +230,7 @@ export default async function ServiceLandingPage({ params }: { params: Promise<P
   const bodyText = content?.body ?? null;
 
   // JSON-LD LocalBusiness — solo si tenemos ciudad con coordenadas
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://fixhub.mx";
+  const baseUrl = getPublicBaseUrl();
   const jsonLd =
     city && city.latitude != null && city.longitude != null
       ? buildLocalBusinessJsonLd({

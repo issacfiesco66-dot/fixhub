@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { getPublicBaseUrl } from "@/lib/url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const base = getPublicBaseUrl();
 
   // Si la BD no está disponible (primer build en Vercel), devolvemos solo
   // la home. Cuando reconstruyas con DATABASE_URL, las 200+ URLs se incluyen.

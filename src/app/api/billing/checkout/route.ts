@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { getCurrentTechnician } from "@/lib/auth";
 import { createRechargeSchema } from "@/lib/validators";
+import { getPublicBaseUrl } from "@/lib/url";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
   }
 
   const totalCredits = pkg.amount + pkg.bonus;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const appUrl = getPublicBaseUrl();
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",

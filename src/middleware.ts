@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getPublicBaseUrl } from "@/lib/url";
 
 // CSRF protection vía Origin validation.
 //
@@ -20,8 +21,9 @@ const STRIPE_WEBHOOK_PATH = "/api/billing/webhook";
 
 function getExtraAllowedOrigins(): Set<string> {
   const set = new Set<string>();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (appUrl) set.add(appUrl.replace(/\/$/, ""));
+  // getPublicBaseUrl() valida que sea URL http(s) real — nunca un secreto mal
+  // configurado en NEXT_PUBLIC_APP_URL.
+  set.add(getPublicBaseUrl());
   if (process.env.NODE_ENV !== "production") {
     set.add("http://localhost:3000");
     set.add("http://127.0.0.1:3000");
