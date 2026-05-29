@@ -66,9 +66,9 @@ export function buildLocalBusinessJsonLd({
 // fallaba con "No Organization/Person entity found" porque la home no tenía
 // ningún JSON-LD (solo las landings programáticas lo tenían a nivel LocalBusiness).
 //
-// `sameAs` y `logo` se omiten a propósito: deben apuntar a assets/perfiles
-// reales (logo PNG ≥112px, perfiles sociales verificados). Añádelos cuando
-// existan para maximizar elegibilidad de Knowledge Panel.
+// `logo` apunta a /logo.png (512×512, marca real). `sameAs` se omite mientras
+// no existan perfiles sociales verificados (pásalos para activarlos y maximizar
+// elegibilidad de Knowledge Panel).
 export function buildSiteJsonLd({
   baseUrl,
   description,
@@ -88,6 +88,12 @@ export function buildSiteJsonLd({
     name: "FixHub",
     url: baseUrl,
     description,
+    logo: {
+      "@type": "ImageObject",
+      url: `${baseUrl}/logo.png`,
+      width: 512,
+      height: 512,
+    },
     image: `${baseUrl}/images/hero.png`,
     areaServed: { "@type": "Country", name: "México" },
   };
