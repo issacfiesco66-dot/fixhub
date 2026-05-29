@@ -60,6 +60,64 @@ export function buildLocalBusinessJsonLd({
   return json;
 }
 
+// JSON-LD a nivel de marca para la home: Organization + WebSite en un @graph.
+// Es la entidad raíz que Google/IA asocian con "FixHub" (Knowledge Panel,
+// citaciones en AI Overviews/ChatGPT/Perplexity). El entity_checker del audit
+// fallaba con "No Organization/Person entity found" porque la home no tenía
+// ningún JSON-LD (solo las landings programáticas lo tenían a nivel LocalBusiness).
+//
+// `sameAs` y `logo` se omiten a propósito: deben apuntar a assets/perfiles
+// reales (logo PNG ≥112px, perfiles sociales verificados). Añádelos cuando
+// existan para maximizar elegibilidad de Knowledge Panel.
+export function buildSiteJsonLd({
+  baseUrl,
+  description,
+  email,
+  sameAs = [],
+}: {
+  baseUrl: string;
+  description: string;
+  email?: string | null;
+  sameAs?: string[];
+}) {
+  const orgId = `${baseUrl}/#organization`;
+
+  const organization: Record<string, unknown> = {
+    "@type": "Organization",
+    "@id": orgId,
+    name: "FixHub",
+    url: baseUrl,
+    description,
+    image: `${baseUrl}/images/hero.png`,
+    areaServed: { "@type": "Country", name: "México" },
+  };
+  if (email) {
+    organization.contactPoint = {
+      "@type": "ContactPoint",
+      email,
+      contactType: "customer support",
+      areaServed: "MX",
+      availableLanguage: ["es"],
+    };
+  }
+  if (sameAs.length > 0) organization.sameAs = sameAs;
+
+  const website = {
+    "@type": "WebSite",
+    "@id": `${baseUrl}/#website`,
+    url: baseUrl,
+    name: "FixHub",
+    description,
+    inLanguage: "es-MX",
+    publisher: { "@id": orgId },
+  };
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [organization, website],
+  };
+}
+
 // Prompt template para generación masiva con LLM — referenciado desde el
 // admin para copy/paste o desde un script de generación.
 // Diseñado para producir ~150 palabras únicas por tupla (service × brand × city).

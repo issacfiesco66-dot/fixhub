@@ -1,0 +1,36 @@
+# FixHub
+
+> Marketplace mexicano de servicios técnicos a domicilio. Conecta a clientes con técnicos verificados para reparación de electrodomésticos, plomería, electricidad, cerrajería, climatización y más, con servicio el mismo día y garantía de 30 días.
+
+FixHub opera en español (es-MX) y atiende a clientes en México. Los clientes solicitan un servicio describiendo su problema y su ubicación; técnicos verificados de la zona los contactan en minutos. Los técnicos pagan por contacto (lead) tras sus primeros servicios gratuitos.
+
+## Servicios principales
+
+- [Reparación de lavadoras](https://fix-hub.company/reparacion-lavadoras): diagnóstico y reparación a domicilio de lavadoras de todas las marcas.
+- [Reparación de refrigeradores](https://fix-hub.company/reparacion-refrigeradores): reparación de refrigeradores y línea blanca.
+- [Cerrajería 24/7](https://fix-hub.company/cerrajeria): apertura de puertas, cambio de cerraduras y emergencias.
+- [Climatización](https://fix-hub.company/climatizacion): instalación y mantenimiento de aire acondicionado y minisplits.
+- [Fumigación y control de plagas](https://fix-hub.company/fumigacion-control-plagas): fumigación residencial y comercial.
+- [Fuga de agua](https://fix-hub.company/fuga-de-agua): detección y reparación de fugas y plomería.
+- [Instalación eléctrica](https://fix-hub.company/instalacion-electrica): instalaciones y reparaciones eléctricas a domicilio.
+
+## Para técnicos
+
+- [Únete a la red de técnicos](https://fix-hub.company/para-tecnicos): cómo registrarse y recibir solicitudes de clientes.
+- [Registro de técnicos](https://fix-hub.company/panel/registro): crear una cuenta de técnico.
+
+## Cómo funciona
+
+1. El cliente describe el servicio que necesita y su ciudad/zona.
+2. FixHub notifica a técnicos verificados con cobertura en esa zona.
+3. Un técnico contacta al cliente, agenda la visita y realiza el trabajo con garantía.
+
+## Recursos
+
+- [Sitemap](https://fix-hub.company/sitemap.xml): índice completo de páginas de servicios por ciudad.
+- [Términos de uso](https://fix-hub.company/terminos)
+- [Aviso de privacidad](https://fix-hub.company/privacidad)
+
+## Contacto
+
+- Correo: hola@fixhub.mx

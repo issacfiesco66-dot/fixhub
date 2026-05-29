@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -15,6 +16,8 @@ import {
   Quote,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { buildSiteJsonLd } from "@/lib/seo";
+import { getPublicBaseUrl } from "@/lib/url";
 import { HeroCTA } from "@/components/HeroCTA";
 import { HowItWorks } from "@/components/HowItWorks";
 import { TrustBar } from "@/components/TrustBar";
@@ -27,6 +30,11 @@ import { SiteSearch } from "@/components/SiteSearch";
 // Con force-dynamic la home se renderiza por request y se cachea vía
 // los headers del CDN. Cuando estabilices prod podés revertir a ISR.
 export const dynamic = "force-dynamic";
+
+// Canonical autorreferenciado de la home (evita "Google eligió otro canonical").
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 // Icono Lucide por categoría (nueva taxonomía)
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -100,8 +108,22 @@ export default async function HomePage() {
     return parts.length > 1 ? `${parts[0]} ${parts[1][0]}.` : parts[0];
   };
 
+  // JSON-LD Organization + WebSite — entidad raíz para Knowledge Graph / AI Overviews.
+  const siteJsonLd = buildSiteJsonLd({
+    baseUrl: getPublicBaseUrl(),
+    description:
+      "Marketplace mexicano de servicios técnicos a domicilio: conecta clientes con técnicos verificados para reparación de electrodomésticos, plomería, electricidad, cerrajería y más.",
+    email: "hola@fixhub.mx",
+  });
+
   return (
     <main className="relative min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(siteJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* Patrón de puntos — más sutil + solo en desktop (en mobile el bg
           queda blanco limpio, sin la sensación gris densa) */}
       <div
