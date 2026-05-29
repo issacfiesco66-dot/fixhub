@@ -78,7 +78,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ ok: true, technician: updated });
   } catch (e) {
     console.error("[api/admin/technicians/:id PATCH]", e);
-    return NextResponse.json({ error: e instanceof Error ? e.message : "Error interno" }, { status: 500 });
+    return NextResponse.json({ error: "Error interno al actualizar el técnico." }, { status: 500 });
   }
 }
 

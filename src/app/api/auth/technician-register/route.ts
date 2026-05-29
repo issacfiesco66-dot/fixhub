@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { setTechnicianSession } from "@/lib/auth";
 import { sendAdminTechnicianNotification } from "@/lib/email";
+import { rateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -40,6 +41,12 @@ const schema = z
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit anti-abuso: endpoint público que crea cuentas + dispara emails
+    // al admin. 5 registros / 15min por IP evita creación masiva y email-bombing.
+    const ip = getClientIp(req);
+    const rl = await rateLimit(`register:${ip}`, 5, 15 * 60_000);
+    if (!rl.allowed) return rateLimitResponse(rl);
+
     const body = await req.json().catch(() => null);
     const parsed = schema.safeParse(body);
     if (!parsed.success) {

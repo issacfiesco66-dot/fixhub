@@ -240,8 +240,11 @@ enum LeadStatus {
 model Lead {
   id           String         @id @default(cuid())
   // Token público para que el cliente siga su solicitud sin cuenta
-  // (/solicitud/[token]). Único e imposible de adivinar.
-  publicToken  String         @unique @default(cuid())
+  // (/solicitud/[token]). Gatea PII (nombre + descripción de la falla), por lo
+  // que NO debe ser un cuid (timestamp-ordenado, enumerable). La ruta lo setea
+  // explícitamente con crypto.randomBytes (256 bits). uuid() v4 es el fallback
+  // crypto-random para cualquier otro punto de creación.
+  publicToken  String         @unique @default(uuid())
   // Datos del cliente (teléfono OCULTO hasta que un técnico compre)
   clientId     String?
   client       User?          @relation("ClientLeads", fields: [clientId], references: [id])

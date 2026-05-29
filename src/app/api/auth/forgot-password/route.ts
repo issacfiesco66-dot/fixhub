@@ -73,8 +73,7 @@ export async function POST(req: NextRequest) {
 
     return okResponse;
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Error interno";
     console.error("[api/auth/forgot-password]", e);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: "Error interno. Intenta de nuevo." }, { status: 500 });
   }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomBytes } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { createLeadSchema } from "@/lib/validators";
 import { getCurrentTechnician } from "@/lib/auth";
@@ -55,8 +56,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Este servicio requiere marca" }, { status: 400 });
   }
 
+  // Token de seguimiento crypto-random (256 bits, URL-safe). NO usamos el
+  // cuid() default porque este token gatea PII del cliente en la página pública
+  // /solicitud/[token] y un cuid es enumerable (timestamp + contador).
+  const publicToken = randomBytes(32).toString("base64url");
+
   const lead = await prisma.lead.create({
     data: {
+      publicToken,
       clientName: data.clientName,
       clientPhone: data.clientPhone,
       clientEmail: data.clientEmail || null,

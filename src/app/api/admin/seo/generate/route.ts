@@ -92,8 +92,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, content: saved });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Error interno";
     console.error("[api/admin/seo/generate]", e);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: "No se pudo generar el contenido. Intenta de nuevo." }, { status: 500 });
   }
 }

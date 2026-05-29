@@ -88,8 +88,9 @@ export async function POST(req: NextRequest) {
       message: "Contraseña actualizada. Ya puedes iniciar sesión.",
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Error interno";
+    // No filtramos el detalle del error al cliente (posible fuga de internals
+    // Prisma/runtime). Log completo server-side, mensaje genérico al cliente.
     console.error("[api/auth/reset-password]", e);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: "Error interno. Intenta de nuevo." }, { status: 500 });
   }
 }
