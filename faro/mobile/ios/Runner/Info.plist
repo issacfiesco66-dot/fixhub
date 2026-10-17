@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Faro</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>faro_app</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+
+	<!-- Permisos (textos leídos por VoiceOver en el diálogo del sistema) -->
+	<key>NSCameraUsageDescription</key>
+	<string>Faro usa la cámara para detectar obstáculos y describir lo que tienes delante.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Faro escucha tus comandos de voz cuando mantienes presionada la pantalla.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Faro usa tu ubicación para guiarte a pie y pedir un Uber desde donde estás.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Faro se conecta a tus gafas inteligentes por Bluetooth.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Faro puede reconocer tu voz en el dispositivo para responder más rápido.</string>
+
+	<!-- Voz y ubicación en segundo plano mientras caminas con la pantalla apagada -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>location</string>
+		<string>processing</string>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+		<string>external-accessory</string>
+	</array>
+	<!-- Gafas Meta: Bluetooth Classic (vídeo) y enlace Wi-Fi -->
+	<key>UISupportedExternalAccessoryProtocols</key>
+	<array>
+		<string>com.meta.ar.wearable</string>
+	</array>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Faro se conecta a tus gafas inteligentes por Bluetooth.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Permite que el teléfono encuentre tus gafas y reciba el vídeo por Wi-Fi.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_bonjour._tcp</string>
+	</array>
+
+	<!-- Abrir la app de Uber con deep link -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>uber</string>
+	</array>
+
+	<!-- Retorno del OAuth de Uber: faro://uber/callback -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>faro</string>
+			</array>
+		</dict>
+	</array>
+
+	<!-- Meta Wearables Device Access Toolkit. En Developer Mode, MetaAppID/ClientToken pueden quedar
+	     sin expandir; para producción define META_APP_ID y CLIENT_TOKEN como User-Defined Settings
+	     en Xcode con los valores del Wearables Developer Center. -->
+	<key>MWDAT</key>
+	<dict>
+		<key>AppLinkURLScheme</key>
+		<string>faro://</string>
+		<key>MetaAppID</key>
+		<string>$(META_APP_ID)</string>
+		<key>ClientToken</key>
+		<string>$(CLIENT_TOKEN)</string>
+		<key>TeamID</key>
+		<string>$(DEVELOPMENT_TEAM)</string>
+		<key>Analytics</key>
+		<dict>
+			<key>OptOut</key>
+			<true/>
+		</dict>
+		<key>CrashReporting</key>
+		<dict>
+			<key>OptOut</key>
+			<false/>
+		</dict>
+	</dict>
+</dict>
+</plist>
