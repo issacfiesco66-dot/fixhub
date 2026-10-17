@@ -128,7 +128,7 @@ Más detalle en `backend/README.md` y `mobile/README.md`.
 | Uber deep link (abre la app con destino) | ✅ | `UBER_CLIENT_ID` |
 | Uber API (solicitud automática tras confirmar) | ✅ código + OAuth | Aprobación de Uber del scope privilegiado `request` |
 | App Flutter: gestos, TalkBack/VoiceOver, TTS, cámara, GPS, voz | ✅ escrita, 🟡 no compilada en este entorno | `flutter analyze && flutter test` en tu máquina |
-| Vídeo desde las gafas Meta | 🟡 puente nativo con stubs | Integrar Meta Wearables Device Access Toolkit y registro en el Wearables Developer Center |
+| Vídeo desde las gafas Meta | ✅ integración con el SDK oficial (DAT 1.0.1) en Android e iOS, 🟡 sin probar con hardware | Probar con gafas reales en Developer Mode; para publicar, registro en el Wearables Developer Center (`docs/META_GLASSES.md`) |
 | Autenticación de usuarios, persistencia (Redis/Postgres), métricas | ❌ | Ver `docs/LAUNCH.md` |
 
 ## Decisiones clave
@@ -146,3 +146,4 @@ Más detalle en `backend/README.md` y `mobile/README.md`.
 * `docs/CREDENTIALS.md` — todas las APIs, claves, aprobaciones y costes estimados.
 * `docs/ACCESSIBILITY.md` — mapa de gestos, comportamiento con lectores de pantalla y lista de pruebas.
 * `docs/LAUNCH.md` — pasos para ponerla en circulación: despliegue, tiendas, legal, pilotos y monetización.
+* `docs/META_GLASSES.md` — gafas Meta: Developer Mode para probar hoy y registro en el Wearables Developer Center para publicar.

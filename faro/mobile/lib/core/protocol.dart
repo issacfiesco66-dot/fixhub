@@ -38,6 +38,8 @@ sealed class ServerMessage {
           alertsEnabled: json['alerts_enabled'] as bool? ?? true,
           rideActive: json['ride_active'] as bool? ?? false,
         );
+      case 'client_action':
+        return ClientActionMessage(action: json['action'] as String? ?? '');
       case 'error':
         return ErrorMessage(message: json['message'] as String? ?? 'error');
       default:
@@ -101,6 +103,12 @@ class StateMessage extends ServerMessage {
   final String? pending;
   final bool alertsEnabled;
   final bool rideActive;
+}
+
+/// Acción que debe ejecutar la app (p. ej. abrir Meta AI para vincular las gafas).
+class ClientActionMessage extends ServerMessage {
+  const ClientActionMessage({required this.action});
+  final String action;
 }
 
 class ErrorMessage extends ServerMessage {

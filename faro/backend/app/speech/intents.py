@@ -25,6 +25,7 @@ class Intent(StrEnum):
     HELP = "help"
     SAVE_PLACE = "save_place"
     TOGGLE_ALERTS = "toggle_alerts"
+    CONNECT_GLASSES = "connect_glasses"
     UNKNOWN = "unknown"
 
 
@@ -154,6 +155,26 @@ HELP_PHRASES = (
     "instrucciones",
     "como funciona",
     "que sabes hacer",
+)
+GLASSES_PHRASES = (
+    "conecta las gafas",
+    "conectar gafas",
+    "conectar las gafas",
+    "conecta mis gafas",
+    "conectar mis gafas",
+    "vincula las gafas",
+    "vincular gafas",
+    "vincular las gafas",
+    "empareja las gafas",
+    "emparejar gafas",
+    "usar las gafas",
+    "activa las gafas",
+    "activar las gafas",
+    "conecta los lentes",
+    "conectar lentes",
+    "conectar los lentes",
+    "vincular lentes",
+    "vincula los lentes",
 )
 
 _RIDE_RE = re.compile(r"\b(?:uber|taxi|un viaje|un coche|un carro|un auto)\b")
@@ -298,6 +319,9 @@ def parse_command(text: str, *, awaiting_confirmation: bool = False) -> ParsedCo
         return cmd
 
     # 6) Consultas rápidas
+    if any(p in t for p in GLASSES_PHRASES):
+        cmd.intent = Intent.CONNECT_GLASSES
+        return cmd
     if any(p in t for p in WHERE_PHRASES):
         cmd.intent = Intent.WHERE_AM_I
         return cmd

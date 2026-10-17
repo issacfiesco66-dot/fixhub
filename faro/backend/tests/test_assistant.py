@@ -115,3 +115,11 @@ async def test_commands_without_position():
     assert texts(await a.handle_utterance(session, "¿dónde estoy?")) == [
         "Aún no tengo tu ubicación."
     ]
+
+
+async def test_connect_glasses_returns_client_action():
+    deps = build_deps(make_settings())
+    session = await start_session(deps)
+    out = await deps.assistant.handle_utterance(session, "conecta las gafas")
+    assert texts(out)[0].startswith("Abriendo Meta AI")
+    assert out[-1] == {"type": "client_action", "action": "connect_glasses"}

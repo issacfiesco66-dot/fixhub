@@ -4,16 +4,18 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <!-- Micrófono para comandos de voz -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <!-- GPS -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- Gafas por Bluetooth (Android 12+) -->
+    <!-- Gafas Meta por Bluetooth (requeridos por el Device Access Toolkit) -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
 
     <!-- Necesario para abrir la app de Uber con deep link (Android 11+) -->
     <queries>
@@ -29,11 +31,14 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
-        <!-- ID de app del Wearables Developer Center de Meta (gafas Ray-Ban/Oakley Meta).
-             Se inyecta desde android/app/build.gradle(.kts): manifestPlaceholders["metaWearablesAppId"] -->
+        <!-- Meta Wearables Device Access Toolkit. Valores desde android/local.properties
+             (ver build.gradle.kts). En Developer Mode ambos pueden ser "0". -->
         <meta-data
             android:name="com.meta.wearable.mwdat.APPLICATION_ID"
-            android:value="${metaWearablesAppId}" />
+            android:value="${mwdat_application_id}" />
+        <meta-data
+            android:name="com.meta.wearable.mwdat.CLIENT_TOKEN"
+            android:value="${mwdat_client_token}" />
 
         <activity
             android:name=".MainActivity"
@@ -52,12 +57,13 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <!-- Retorno del OAuth de Uber (faro://uber/callback) -->
+            <!-- Esquema de retorno "faro://": lo usan Meta AI (registro/permisos de las gafas)
+                 y el OAuth de Uber (faro://uber/callback). -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="faro" android:host="uber" />
+                <data android:scheme="faro" />
             </intent-filter>
         </activity>
         <meta-data

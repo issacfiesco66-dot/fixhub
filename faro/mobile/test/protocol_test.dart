@@ -24,6 +24,8 @@ void main() {
         '{"type":"state","navigating":true,"pending":"ride","alerts_enabled":false}');
     expect((state as StateMessage).pending, 'ride');
     expect(state.alertsEnabled, isFalse);
+    final action = ServerMessage.parse('{"type":"client_action","action":"connect_glasses"}');
+    expect((action as ClientActionMessage).action, 'connect_glasses');
     expect(ServerMessage.parse('{"type":"wat"}'), isA<UnknownMessage>());
   });
 

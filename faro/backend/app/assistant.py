@@ -30,7 +30,7 @@ log = logging.getLogger(__name__)
 
 HELP_TEXT = (
     "Puedes decir: llévame a un lugar; pedir un Uber a casa; qué hay delante; dónde estoy; "
-    "guarda este lugar como casa; silenciar alertas; o cancelar."
+    "guarda este lugar como casa; conecta las gafas; silenciar alertas; o cancelar."
 )
 
 
@@ -158,6 +158,7 @@ class Assistant:
             Intent.HELP: self._help,
             Intent.SAVE_PLACE: self._save_place,
             Intent.TOGGLE_ALERTS: self._toggle_alerts,
+            Intent.CONNECT_GLASSES: self._connect_glasses,
         }.get(cmd.intent, self._unknown)
         return await handler(session, cmd)
 
@@ -311,6 +312,13 @@ class Assistant:
             "Alertas de obstáculos activadas." if enabled else "Alertas de obstáculos silenciadas."
         )
         return self._say(session, text) + [session.state_message()]
+
+    async def _connect_glasses(self, session: Session, cmd: ParsedCommand) -> list[dict]:
+        # La vinculación ocurre en el teléfono (SDK de Meta); el backend solo da la orden.
+        text = "Abriendo Meta AI para vincular tus gafas. Acepta la conexión y vuelve a Faro."
+        return self._say(session, text, 1) + [
+            {"type": "client_action", "action": "connect_glasses"}
+        ]
 
     async def _unknown(self, session: Session, cmd: ParsedCommand) -> list[dict]:
         return self._say(

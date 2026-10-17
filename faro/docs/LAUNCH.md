@@ -13,10 +13,10 @@
 * Antes de usuarios reales: autenticación por usuario (Firebase Auth/Auth0 → JWT), Redis para sesiones, rate limiting, borrado de sesión al cerrar.
 
 ## Fase 2 — Gafas Meta
-1. Regístrate en el Wearables Developer Center, crea la app y obtén el `APPLICATION_ID`.
-2. Integra el Meta Wearables Device Access Toolkit en `mobile/android/.../GlassesBridge.kt` e `ios/Runner/GlassesBridge.swift` (los `TODO(DAT)` marcan los puntos exactos). Mantén 2-3 fps para la batería de las gafas.
-3. Solicita a Meta la aprobación de publicación (en developer preview la distribución pública está restringida).
-4. Calibra `CAMERA_HORIZONTAL_FOV_DEG` con las gafas reales (afecta a las distancias anunciadas).
+Guía completa en `docs/META_GLASSES.md`.
+1. **Hoy, sin registro**: activa *Modo desarrollador* en Meta AI (Ajustes → Tus gafas), compila con credenciales "0" y di "conecta las gafas" en Faro.
+2. Calibra `CAMERA_HORIZONTAL_FOV_DEG` con las gafas reales (afecta a las distancias anunciadas) y ajusta la política de alertas con el vídeo real.
+3. **Para publicar**: crea cuenta, organización y proyecto en el Wearables Developer Center, copia el Application ID y el Client Token a `android/local.properties` y a los User-Defined Settings de Xcode, configura el canal de lanzamiento y solicita la aprobación de publicación de Meta.
 
 ## Fase 3 — Pilotos con personas usuarias
 * 10-20 personas ciegas/baja visión durante 4 semanas, con un especialista en orientación y movilidad. Métricas: alertas útiles vs. falsas por hora, tiempo de reacción, tasa de comandos entendidos, NPS.

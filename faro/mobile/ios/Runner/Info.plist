@@ -54,6 +54,23 @@
 	<array>
 		<string>audio</string>
 		<string>location</string>
+		<string>processing</string>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+		<string>external-accessory</string>
+	</array>
+	<!-- Gafas Meta: Bluetooth Classic (vídeo) y enlace Wi-Fi -->
+	<key>UISupportedExternalAccessoryProtocols</key>
+	<array>
+		<string>com.meta.ar.wearable</string>
+	</array>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Faro se conecta a tus gafas inteligentes por Bluetooth.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Permite que el teléfono encuentre tus gafas y reciba el vídeo por Wi-Fi.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_bonjour._tcp</string>
 	</array>
 
 	<!-- Abrir la app de Uber con deep link -->
@@ -66,8 +83,10 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>app.faro.oauth</string>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>faro</string>
@@ -75,9 +94,19 @@
 		</dict>
 	</array>
 
-	<!-- Meta Wearables Device Access Toolkit: analítica y reporte de fallos del SDK -->
+	<!-- Meta Wearables Device Access Toolkit. En Developer Mode, MetaAppID/ClientToken pueden quedar
+	     sin expandir; para producción define META_APP_ID y CLIENT_TOKEN como User-Defined Settings
+	     en Xcode con los valores del Wearables Developer Center. -->
 	<key>MWDAT</key>
 	<dict>
+		<key>AppLinkURLScheme</key>
+		<string>faro://</string>
+		<key>MetaAppID</key>
+		<string>$(META_APP_ID)</string>
+		<key>ClientToken</key>
+		<string>$(CLIENT_TOKEN)</string>
+		<key>TeamID</key>
+		<string>$(DEVELOPMENT_TEAM)</string>
 		<key>Analytics</key>
 		<dict>
 			<key>OptOut</key>

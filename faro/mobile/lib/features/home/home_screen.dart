@@ -76,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const CustomSemanticsAction(label: 'Repetir'): c.repeatLast,
           const CustomSemanticsAction(label: '¿Dónde estoy?'): c.whereAmI,
           const CustomSemanticsAction(label: 'Describir lo que hay delante'): c.describeScene,
+          const CustomSemanticsAction(label: 'Conectar gafas Meta'): c.connectGlasses,
           CustomSemanticsAction(
             label: c.alertsEnabled ? 'Silenciar alertas de obstáculos' : 'Activar alertas',
           ): c.toggleAlerts,

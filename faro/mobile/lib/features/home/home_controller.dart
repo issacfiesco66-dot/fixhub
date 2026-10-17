@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
@@ -26,6 +27,7 @@ abstract class HomeActions {
   Future<void> whereAmI();
   Future<void> describeScene();
   Future<void> toggleAlerts();
+  Future<void> connectGlasses();
 }
 
 enum FaroStatus { starting, ready, listening, thinking, offline }
@@ -60,6 +62,8 @@ class HomeController extends ChangeNotifier implements HomeActions {
   final Future<bool> Function(String url) _openUrl;
 
   FrameSource? _frames;
+  StreamSubscription<Uint8List>? _frameSub;
+  bool _connectingGlasses = false;
   final List<StreamSubscription<dynamic>> _subs = [];
   Timer? _maxRecordingTimer;
 
@@ -114,7 +118,7 @@ class HomeController extends ChangeNotifier implements HomeActions {
       await source.start();
       _frames = source;
       frameSourceName = source.name;
-      _subs.add(source.frames.listen(_backend.sendFrame));
+      _frameSub = source.frames.listen(_backend.sendFrame);
     } catch (e) {
       debugPrint('Sin fuente de vídeo: $e');
       await _speech.say('No pude iniciar la cámara. Las alertas de obstáculos no estarán activas.',
@@ -134,6 +138,8 @@ class HomeController extends ChangeNotifier implements HomeActions {
       Permission.camera,
       Permission.microphone,
       Permission.locationWhenInUse,
+      // Android 12+: necesario para que el SDK de Meta hable con las gafas.
+      if (Platform.isAndroid) Permission.bluetoothConnect,
     ].request();
     final okLocation = await _location.ensurePermission();
     return statuses.values.every((s) => s.isGranted || s.isLimited) && okLocation;
@@ -161,6 +167,8 @@ class HomeController extends ChangeNotifier implements HomeActions {
         navigating = m.navigating;
         pending = m.pending;
         notifyListeners();
+      case ClientActionMessage m:
+        if (m.action == 'connect_glasses') await connectGlasses();
       case ErrorMessage m:
         debugPrint('Backend error: ${m.message}');
       case UnknownMessage _:
@@ -241,6 +249,43 @@ class HomeController extends ChangeNotifier implements HomeActions {
   Future<void> toggleAlerts() async =>
       _backend.sendUtterance(alertsEnabled ? 'silenciar alertas' : 'activar alertas');
 
+  /// Vincula las gafas Meta: registro en Meta AI + permiso de cámara, y cambia la fuente de vídeo.
+  @override
+  Future<void> connectGlasses() async {
+    if (_connectingGlasses) return;
+    _connectingGlasses = true;
+    try {
+      await _speech.say(
+        'Abriendo Meta AI para vincular tus gafas. Acepta la conexión y vuelve a Faro.',
+        priority: 1,
+        interrupt: true,
+      );
+      final glasses = GlassesFrameSource();
+      await glasses.connect();
+      await _frameSub?.cancel();
+      await _frames?.stop();
+      _frames = null;
+      await glasses.start();
+      _frames = glasses;
+      frameSourceName = glasses.name;
+      _frameSub = glasses.frames.listen(_backend.sendFrame);
+      notifyListeners();
+      await _speech.say('Gafas conectadas. Ya analizo lo que ven.', priority: 1);
+    } on PlatformException catch (e) {
+      final text = switch (e.code) {
+        'sdk_missing' => 'Esta versión de la app no incluye el SDK de las gafas.',
+        'permission_denied' => 'No diste permiso de cámara en Meta AI. Inténtalo de nuevo.',
+        _ => 'No pude vincular las gafas. Comprueba que Meta AI esté instalada y el modo desarrollador activo.',
+      };
+      await _speech.say(text, priority: 1);
+    } catch (e) {
+      debugPrint('connectGlasses: $e');
+      await _speech.say('No pude vincular las gafas.', priority: 1);
+    } finally {
+      _connectingGlasses = false;
+    }
+  }
+
   void _setStatus(FaroStatus s, String text) {
     status = s;
     statusText = text;
@@ -253,6 +298,7 @@ class HomeController extends ChangeNotifier implements HomeActions {
     for (final s in _subs) {
       unawaited(s.cancel());
     }
+    unawaited(_frameSub?.cancel());
     unawaited(_frames?.stop());
     unawaited(_location.stop());
     unawaited(_recorder.dispose());

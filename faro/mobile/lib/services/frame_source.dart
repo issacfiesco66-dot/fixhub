@@ -10,7 +10,9 @@ import 'package:image/image.dart' as img;
 import '../core/config.dart';
 
 /// Fuente de fotogramas JPEG. Dos implementaciones:
-///  * [GlassesFrameSource]: gafas Meta a través del puente nativo (Wearables Device Access Toolkit).
+///  * [GlassesFrameSource]: gafas Meta a través del puente nativo (Meta Wearables Device Access
+///    Toolkit). `isAvailable` es true cuando la app ya está registrada en Meta AI y hay gafas
+///    vinculadas; `connect()` inicia el registro y pide el permiso de cámara.
 ///  * [PhoneCameraFrameSource]: cámara trasera del teléfono (desarrollo y respaldo).
 abstract class FrameSource {
   String get name;
@@ -53,9 +55,15 @@ class GlassesFrameSource implements FrameSource {
     }
   }
 
+  /// Registro con Meta AI y permiso de cámara en las gafas (abre la app Meta AI).
+  /// Lanza [PlatformException] con código `sdk_missing`, `permission_denied`,
+  /// `registration_unavailable` o `connect_failed`.
+  Future<void> connect() async {
+    await _method.invokeMethod<void>('connect');
+  }
+
   @override
   Future<void> start() async {
-    await _method.invokeMethod<void>('connect');
     _sub = _events.receiveBroadcastStream().listen((dynamic data) {
       if (data is Uint8List) _controller.add(data);
     });
