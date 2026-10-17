@@ -1,0 +1,10 @@
+services:
+  backend:
+    build:
+      context: .
+      args:
+        INSTALL_VISION: "0"
+    env_file: .env
+    ports:
+      - "8000:8000"
+    restart: unless-stopped

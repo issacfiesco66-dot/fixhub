@@ -1,0 +1,32 @@
+name: faro_app
+description: Faro - asistente de movilidad por voz para personas con discapacidad visual (gafas Meta + teléfono).
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  camera: ^0.11.0            # cámara del teléfono (fallback cuando no hay gafas)
+  flutter_tts: ^4.0.2        # TTS en el dispositivo (latencia mínima, funciona sin red)
+  geolocator: ^13.0.1        # GPS
+  flutter_compass: ^0.8.1    # brújula (rumbo del usuario)
+  web_socket_channel: ^3.0.1 # canal en tiempo real con el backend
+  record: ^5.1.2             # grabación push-to-talk
+  http: ^1.2.2
+  url_launcher: ^6.3.0       # abrir deep link de Uber
+  permission_handler: ^11.3.1
+  image: ^4.2.0              # conversión YUV/BGRA -> JPEG
+  path_provider: ^2.1.4
+  wakelock_plus: ^1.2.8      # mantener pantalla/cámara activas
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

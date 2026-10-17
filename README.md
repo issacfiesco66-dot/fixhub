@@ -114,3 +114,7 @@ src/
 - [ ] Mover broker a Pusher cuando haya más de una instancia
 - [ ] Dashboard admin (métricas, refunds, verificación de técnicos)
 - [ ] Job cron para expirar leads viejos
+
+## Otros proyectos en este repositorio
+
+- **`faro/`** — Faro: asistente de movilidad por voz para personas con discapacidad visual (gafas Ray-Ban Meta → teléfono → IA). Backend Python (visión, navegación peatonal, Uber, comandos de voz) + app Flutter accesible. Ver `faro/README.md`.

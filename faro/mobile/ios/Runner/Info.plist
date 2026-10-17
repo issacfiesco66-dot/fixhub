@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Faro</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>faro_app</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+
+	<!-- Permisos (textos leídos por VoiceOver en el diálogo del sistema) -->
+	<key>NSCameraUsageDescription</key>
+	<string>Faro usa la cámara para detectar obstáculos y describir lo que tienes delante.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Faro escucha tus comandos de voz cuando mantienes presionada la pantalla.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Faro usa tu ubicación para guiarte a pie y pedir un Uber desde donde estás.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Faro se conecta a tus gafas inteligentes por Bluetooth.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Faro puede reconocer tu voz en el dispositivo para responder más rápido.</string>
+
+	<!-- Voz y ubicación en segundo plano mientras caminas con la pantalla apagada -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>location</string>
+	</array>
+
+	<!-- Abrir la app de Uber con deep link -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>uber</string>
+	</array>
+
+	<!-- Retorno del OAuth de Uber: faro://uber/callback -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>app.faro.oauth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>faro</string>
+			</array>
+		</dict>
+	</array>
+
+	<!-- Meta Wearables Device Access Toolkit: analítica y reporte de fallos del SDK -->
+	<key>MWDAT</key>
+	<dict>
+		<key>Analytics</key>
+		<dict>
+			<key>OptOut</key>
+			<true/>
+		</dict>
+		<key>CrashReporting</key>
+		<dict>
+			<key>OptOut</key>
+			<false/>
+		</dict>
+	</dict>
+</dict>
+</plist>

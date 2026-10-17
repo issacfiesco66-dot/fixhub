@@ -1,0 +1,15 @@
+# Dataset YOLO para peligros de acera (formato ultralytics).
+# Estructura esperada:
+#   datasets/sidewalk_hazards/images/{train,val}/*.jpg
+#   datasets/sidewalk_hazards/labels/{train,val}/*.txt   (class cx cy w h normalizados)
+path: ./datasets/sidewalk_hazards
+train: images/train
+val: images/val
+
+names:
+  0: stairs_down     # escaleras hacia abajo vistas desde arriba (el peligro más grave)
+  1: stairs_up       # escaleras hacia arriba
+  2: hanging_cable   # cables, ramas, toldos u objetos a la altura de la cabeza
+  3: pole            # postes, señales, árboles en la trayectoria
+  4: pothole         # baches, hoyos, rejillas/alcantarillas abiertas
+  5: curb            # bordillos y escalones aislados
